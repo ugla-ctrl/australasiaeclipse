@@ -40,6 +40,11 @@
     day: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 12 })
   };
   tiles.night.addTo(map);
+  (function () { // navy wash for the dark-blue basemap (inserted below the controls)
+    var t = document.createElement('div'); t.className = 'map-tint';
+    var mc = document.getElementById('map');
+    mc.insertBefore(t, mc.querySelector('.leaflet-control-container'));
+  })();
 
   var PATH = null, umbraLayer = null;
   var pathLayers = [];
@@ -299,6 +304,7 @@
   var segView = document.getElementById('segView'), segLight = document.getElementById('segLight');
   var mapEl = document.getElementById('map'), globeEl = document.getElementById('globe');
   var light = 'night';
+  mapEl.classList.add('night');
   segView.addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
     segView.querySelectorAll('button').forEach(function (x) { x.classList.remove('on'); }); b.classList.add('on');
@@ -311,6 +317,7 @@
     var b = e.target.closest('button'); if (!b) return;
     segLight.querySelectorAll('button').forEach(function (x) { x.classList.remove('on'); }); b.classList.add('on');
     light = b.dataset.l;
+    mapEl.classList.toggle('night', light === 'night');
     map.removeLayer(tiles[light === 'day' ? 'night' : 'day']); tiles[light].addTo(map);
     pathLayers.forEach(function (l) { l.bringToFront(); });
     window.dispatchEvent(new CustomEvent('globe:light', { detail: { light: light } }));

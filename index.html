@@ -347,14 +347,18 @@
   function setCaption(idx) { if (!cap) return; cap.style.opacity = 0; setTimeout(function () { cap.textContent = slides[idx].getAttribute('data-name') || ''; cap.style.opacity = 1; }, 300); }
   slides[0].classList.add('on');
   if (cap) cap.textContent = slides[0].getAttribute('data-name') || '';
-  // preload the rest so crossfades don't pop
-  slides.forEach(function (s) { var u = (s.style.backgroundImage.match(/url\(["']?([^"')]+)/) || [])[1]; if (u) { var im = new Image(); im.src = u; } });
+  // Just-in-time preload (keeps the 4K images off the initial load; only the
+  // next slide is fetched ahead so crossfades stay smooth).
+  function urlOf(idx) { return (slides[idx].style.backgroundImage.match(/url\(["']?([^"')]+)/) || [])[1]; }
+  function preload(idx) { var u = urlOf(idx); if (u) { var im = new Image(); im.src = u; } }
+  preload(1);
   function advance() {
     if (document.hidden) return;
     slides[i].classList.remove('on');
     i = (i + 1) % slides.length;
     slides[i].classList.add('on');
     setCaption(i);
+    preload((i + 1) % slides.length);
   }
   setInterval(advance, HOLD);
 })();
