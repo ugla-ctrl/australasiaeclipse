@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact — Australasia Eclipse 2028</title>
+<meta name="description" content="Get updates on the July 22, 2028 total solar eclipse across Australasia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='34' fill='none' stroke='%23f5c86b' stroke-width='6'/><circle cx='50' cy='50' r='26' fill='%2307080d'/></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="wordmark" href="index.html">AUSTRALASIA ECLIPSE 2028<span class="dot">.</span></a>
+  <button class="nav-toggle" aria-label="Menu">☰</button>
+  <nav class="mainnav">
+    <a href="index.html">Home</a>
+    <a href="hub.html">EclipseSeeker Hub</a>
+    <a href="blog.html">Blog</a>
+    <a href="faq.html">FAQ</a>
+    <a href="contact.html" class="cta-pill active">Get Updates</a>
+  </nav>
+</header>
+
+<section class="section" style="text-align:center; padding-bottom: 26px;">
+  <h1 class="section-title">Contact Us</h1>
+  <p class="lede" style="margin: 0 auto;">Drop us a line!</p>
+</section>
+
+<section class="section" style="padding-top: 10px;">
+  <form class="contact-box" id="contactForm" novalidate>
+    <div class="field"><input type="text" id="cName" placeholder="Name" autocomplete="name"></div>
+    <div class="field"><input type="email" id="cEmail" placeholder="Email*" required autocomplete="email"></div>
+    <div class="field"><textarea id="cMsg" placeholder="Message"></textarea></div>
+    <label class="check-row">
+      <input type="checkbox" id="cList" checked>
+      <span>Sign up for our email list for updates, promotions, and more.</span>
+    </label>
+    <button class="send-btn" type="submit">Send</button>
+    <p class="form-note" id="formNote"></p>
+  </form>
+</section>
+
+<footer>
+  <div>Copyright © 2026 Australasia Eclipse 2028 — All Rights Reserved.</div>
+  <div class="powered">Powered by <a href="#">EclipseSeekers</a></div>
+</footer>
+
+<script src="js/common.js"></script>
+<script>
+// NOTE: static scaffold — point FORM_ENDPOINT at a real backend (Formspree / Buffer /
+// the EclipseSeekers list API) before launch. Falls back to a friendly local confirm.
+var FORM_ENDPOINT = '';
+document.getElementById('contactForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var email = document.getElementById('cEmail');
+  var note = document.getElementById('formNote');
+  if (!email.value || email.value.indexOf('@') < 1) {
+    note.textContent = 'Please enter a valid email address.';
+    note.style.color = 'var(--accent)';
+    return;
+  }
+  if (FORM_ENDPOINT) {
+    fetch(FORM_ENDPOINT, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: document.getElementById('cName').value,
+        email: email.value,
+        message: document.getElementById('cMsg').value,
+        list: document.getElementById('cList').checked
+      })
+    }).then(function () { done(); }).catch(function () { done(); });
+  } else { done(); }
+  function done() {
+    document.getElementById('contactForm').reset();
+    note.textContent = 'Thanks — you’re on the list. See you in the shadow.';
+    note.style.color = 'var(--gold)';
+  }
+});
+</script>
+</body>
+</html>
