@@ -251,8 +251,10 @@ h1, h2, h3, .display { font-family: var(--serif); font-weight: 500; line-height:
 
 /* ---------- Footer ---------- */
 footer { border-top: 1px solid var(--line); padding: 40px 28px; text-align: center; color: var(--muted); font-size: 13px; background: var(--bg-2); }
-footer .powered { margin-top: 6px; font-size: 12px; }
-footer .powered a { color: var(--ink); }
+footer .powered { margin-top: 10px; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+footer .powered a { color: var(--ink); display: inline-flex; }
+footer .imxp-logo { height: 17px; width: auto; opacity: 0.82; transition: opacity 0.2s; }
+footer .powered a:hover .imxp-logo { opacity: 1; }
 footer .fine { margin-top: 10px; font-size: 11px; color: rgba(164,158,146,0.55); }
 footer .fine a { text-decoration: underline; }
 
