@@ -28,7 +28,19 @@
 <div id="bgshade" aria-hidden="true"></div>
 
 <header class="topbar">
-  <a class="wordmark" href="#top">AUSTRALASIA ECLIPSE 2028<span class="dot">.</span></a>
+  <a class="wordmark" href="#top">
+    <svg class="eclipse-mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <defs><radialGradient id="coronaGrad" cx="50%" cy="50%" r="50%">
+        <stop offset="40%" stop-color="#000000"/>
+        <stop offset="45%" stop-color="#fff3d4"/>
+        <stop offset="53%" stop-color="#ffce6a" stop-opacity="0.85"/>
+        <stop offset="100%" stop-color="#ffce6a" stop-opacity="0"/>
+      </radialGradient></defs>
+      <circle class="corona" cx="12" cy="12" r="11.5" fill="url(#coronaGrad)"/>
+      <circle cx="12" cy="12" r="5.2" fill="#0b0c11"/>
+    </svg>
+    <span class="wm-text">AUSTRALASIA ECLIPSE 2028<span class="dot">.</span></span>
+  </a>
   <button class="nav-toggle" aria-label="Menu">☰</button>
   <nav class="mainnav">
     <a href="#top">Home</a>
@@ -41,7 +53,6 @@
 
 <!-- ============ HERO ============ -->
 <section class="hero">
-  <canvas id="heroCanvas" aria-hidden="true"></canvas>
   <div class="hero-inner">
     <div class="kicker">22 July 2028 · Australia &amp; New Zealand</div>
     <h1>Australasia Eclipse 2028</h1>
