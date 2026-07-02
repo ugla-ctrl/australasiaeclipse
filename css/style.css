@@ -297,9 +297,11 @@ footer .fine a { text-decoration: underline; }
 
 /* ---------- Leaflet dark tweaks ---------- */
 .leaflet-container { background: #0a1322; font-family: var(--sans); }
-/* Dark-blue night basemap: a screen-blended navy wash lifts the near-black tiles to deep blue,
-   while barely touching the bright gold path (screen leaves highlights almost unchanged). */
-.map-tint { position: absolute; inset: 0; z-index: 250; pointer-events: none; display: none; mix-blend-mode: screen; background: #1f4a86; }
+/* Dark-blue night basemap: a translucent navy fill lives in its own Leaflet pane
+   (z-index 250, set in hub.js) between the tiles and the path, so the basemap reads
+   deep blue while the gold path/pins stay crisp on top. Oversized to cover the
+   viewport as the map-pane transforms during panning. */
+.map-tint { position: absolute; inset: -6000px; pointer-events: none; display: none; background: rgba(26, 58, 120, 0.58); }
 #map.night .map-tint { display: block; }
 .leaflet-control-attribution { background: rgba(6,6,9,0.7) !important; color: var(--muted) !important; font-size: 10px !important; }
 .leaflet-control-attribution a { color: var(--muted) !important; }

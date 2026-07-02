@@ -40,10 +40,18 @@
     day: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 12 })
   };
   tiles.night.addTo(map);
-  (function () { // navy wash for the dark-blue basemap (inserted below the controls)
+  (function () {
+    // Night-blue wash. It must live in its OWN Leaflet pane stacked BETWEEN the tile
+    // pane (z-index 200) and the overlay/path pane (z-index 400): a plain sibling of
+    // the map pane can only sit fully under the tiles (invisible) or fully over the
+    // path (dims the gold). The pane rides the map-pane transform, so the fill is
+    // oversized to keep the viewport covered while panning.
+    map.createPane('nightwash');
+    var pane = map.getPane('nightwash');
+    pane.style.zIndex = 250;
+    pane.style.pointerEvents = 'none';
     var t = document.createElement('div'); t.className = 'map-tint';
-    var mc = document.getElementById('map');
-    mc.insertBefore(t, mc.querySelector('.leaflet-control-container'));
+    pane.appendChild(t);
   })();
 
   var PATH = null, umbraLayer = null;
