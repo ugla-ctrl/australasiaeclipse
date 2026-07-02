@@ -164,6 +164,55 @@ function size() {
   renderer.setSize(el.clientWidth, el.clientHeight);
 }
 
+// ---- Moon's umbra ("Watch the shadow cross"), driven each frame by hub.js ----
+let umbra = null, umbraActive = false;
+const UMBRA_R = 1.016; // above band (1.006), central line (1.008) and pins (1.012)
+function glowTexture() {
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const g = c.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, 'rgba(255,214,150,0.95)');
+  gr.addColorStop(0.35, 'rgba(255,182,92,0.4)');
+  gr.addColorStop(1, 'rgba(255,182,92,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+function buildUmbra() {
+  const fill = new THREE.Mesh(new THREE.BufferGeometry(),
+    new THREE.MeshBasicMaterial({ color: 0x04050a, transparent: true, opacity: 0.6, side: THREE.DoubleSide, depthWrite: false }));
+  const rim = new THREE.LineLoop(new THREE.BufferGeometry(),
+    new THREE.LineBasicMaterial({ color: 0xffe6bf, transparent: true, opacity: 0.95, depthWrite: false }));
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTexture(), color: 0xffffff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
+  glow.scale.set(0.13, 0.13, 1);
+  fill.renderOrder = 10; rim.renderOrder = 11; glow.renderOrder = 12;
+  group.add(fill); group.add(rim); group.add(glow);
+  umbra = { fill, rim, glow };
+}
+function setUmbra(ring) {
+  if (!inited || !group) return;
+  if (!umbra) buildUmbra();
+  const pts = ring.map(p => toVec(p[0], p[1], UMBRA_R));
+  const c = new THREE.Vector3();
+  pts.forEach(v => c.add(v));
+  c.multiplyScalar(1 / pts.length).normalize().multiplyScalar(UMBRA_R);
+  const fpos = [];
+  for (let i = 0; i < pts.length; i++) {
+    const a = pts[i], b = pts[(i + 1) % pts.length];
+    fpos.push(c.x, c.y, c.z, a.x, a.y, a.z, b.x, b.y, b.z);
+  }
+  umbra.fill.geometry.setAttribute('position', new THREE.Float32BufferAttribute(fpos, 3));
+  const rpos = []; pts.forEach(v => rpos.push(v.x, v.y, v.z));
+  umbra.rim.geometry.setAttribute('position', new THREE.Float32BufferAttribute(rpos, 3));
+  umbra.glow.position.copy(c);
+  umbra.fill.visible = umbra.rim.visible = umbra.glow.visible = true;
+  umbraActive = true;
+}
+function clearUmbra() {
+  umbraActive = false;
+  if (umbra) umbra.fill.visible = umbra.rim.visible = umbra.glow.visible = false;
+}
+window.__globeUmbra = setUmbra;
+window.__globeUmbraClear = clearUmbra;
+
 let lastT = 0;
 function loop(t) {
   if (!running) return;
@@ -173,7 +222,7 @@ function loop(t) {
     rotY += vx; rotX += vy;
     vx *= 0.94; vy *= 0.94;
     idle += dt;
-    if (idle > 3) rotY += dt * 0.05; // gentle auto-rotate when idle
+    if (idle > 3 && !umbraActive) rotY += dt * 0.05; // gentle auto-rotate when idle (paused during the shadow run)
   }
   rotX = Math.max(-1.35, Math.min(1.35, rotX));
   group.rotation.set(rotX, rotY, 0);

@@ -290,17 +290,18 @@
     var fr = frameAt(playT);
     if (umbraLayer) umbraLayer.setLatLngs(fr.ring);
     else umbraLayer = L.polygon(fr.ring, { className: 'umbra-shadow', color: '#ffe6bf', weight: 2.5, opacity: 0.95, fillColor: '#04050a', fillOpacity: 0.62, interactive: false }).addTo(map);
+    if (window.__globeUmbra) window.__globeUmbra(fr.ring); // mirror the shadow onto the 3D globe
     var tz = tzFor(fr.c[0], fr.c[1]);
     timeEl.textContent = fmtShort(Date.UTC(2028, 6, 22) + fr.ut * 3600000, tz.off) + ' ' + tz.name;
     durEl.textContent = fr.dur ? fr.dur + ' OF TOTALITY' : 'UMBRA';
     raf = requestAnimationFrame(stepShadow);
   }
-  function stopShadow() { playing = false; lastTs = 0; playBtn.innerHTML = '▶&nbsp; Watch the shadow cross'; clockEl.style.display = 'none'; if (umbraLayer) { map.removeLayer(umbraLayer); umbraLayer = null; } if (raf) cancelAnimationFrame(raf); }
+  function stopShadow() { playing = false; lastTs = 0; playBtn.innerHTML = '▶&nbsp; Watch the shadow cross'; clockEl.style.display = 'none'; if (umbraLayer) { map.removeLayer(umbraLayer); umbraLayer = null; } if (window.__globeUmbraClear) window.__globeUmbraClear(); if (raf) cancelAnimationFrame(raf); }
   playBtn.addEventListener('click', function () {
     if (!PATH) return;
     if (playing) { stopShadow(); return; }
     playing = true; playT = 0; lastTs = 0; playBtn.innerHTML = '■&nbsp; Stop'; clockEl.style.display = 'block';
-    map.flyToBounds([[-46, 112], [-10, 179]], { duration: 1 });
+    if (document.getElementById('globe').style.display !== 'block') map.flyToBounds([[-46, 112], [-10, 179]], { duration: 1 }); // 2D only
     requestAnimationFrame(stepShadow);
   });
 
