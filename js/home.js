@@ -43,13 +43,8 @@
     var R = Math.min(W, H) * 0.14;               // Moon/Sun disc radius
     var breathe = reduced ? 1 : 1 + 0.02 * Math.sin(t * 0.5);
 
-    // Deep sky — subtle radial from a touch of warmth near the corona to near-black
-    var sky = ctx.createRadialGradient(cx, cy, R, cx, cy, Math.max(W, H) * 0.9);
-    sky.addColorStop(0, '#0a0b13');
-    sky.addColorStop(0.5, '#070810');
-    sky.addColorStop(1, '#040407');
-    ctx.fillStyle = sky;
-    ctx.fillRect(0, 0, W, H);
+    // Transparent — the darkened place-slideshow shows behind the corona
+    ctx.clearRect(0, 0, W, H);
 
     // Stars
     for (var i = 0; i < stars.length; i++) {
@@ -90,16 +85,10 @@
     ctx.restore();
 
     // The Moon — pure black disc with a faint warm rim
-    ctx.fillStyle = '#040407';
+    ctx.fillStyle = '#050507';
     ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.fill();
     ctx.strokeStyle = 'rgba(255,236,205,0.22)'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.arc(cx, cy, R + 0.5, 0, 7); ctx.stroke();
-
-    // Vignette + gradient floor so the headline sits on darkness
-    var fg = ctx.createLinearGradient(0, H * 0.5, 0, H);
-    fg.addColorStop(0, 'rgba(4,4,7,0)');
-    fg.addColorStop(1, 'rgba(4,4,7,0.85)');
-    ctx.fillStyle = fg; ctx.fillRect(0, 0, W, H);
 
     if (!reduced) requestAnimationFrame(draw);
   }

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "sydney",
+    "term": "Sydney Opera House Harbour Bridge sunset",
+    "title": "File:Panorama of dusk - sunset over the Sydney CBD, the Sydney Harbour Bridge and the Sydney Opera House, panorama taken from the Royal Botanic Gardens, 5th October 2014. Peter Neaum. - panoramio.jpg",
+    "thumburl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Panorama_of_dusk_-_sunset_over_the_Sydney_CBD%2C_the_Sydney_Harbour_Bridge_and_the_Sydney_Opera_House%2C_panorama_taken_from_the_Royal_Botanic_Gardens%2C_5th_October_2014._Peter_Neaum._-_panoramio.jpg/1920px-thumbnail.jpg",
+    "descurl": "https://commons.wikimedia.org/wiki/File:Panorama_of_dusk_-_sunset_over_the_Sydney_CBD,_the_Sydney_Harbour_Bridge_and_the_Sydney_Opera_House,_panorama_taken_from_the_Royal_Botanic_Gardens,_5th_October_2014._Peter_Neaum._-_panoramio.jpg",
+    "artist": "Peter Neaum",
+    "license": "CC BY 3.0",
+    "w": 17304,
+    "h": 3389
+  },
+  {
+    "id": "milford",
+    "term": "Milford Sound Mitre Peak",
+    "title": "File:Milford Sound, Mitre Peak, ships 2016-01-31.jpg",
+    "thumburl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Milford_Sound%2C_Mitre_Peak%2C_ships_2016-01-31.jpg/1920px-Milford_Sound%2C_Mitre_Peak%2C_ships_2016-01-31.jpg",
+    "descurl": "https://commons.wikimedia.org/wiki/File:Milford_Sound,_Mitre_Peak,_ships_2016-01-31.jpg",
+    "artist": "Szilas",
+    "license": "Public domain",
+    "w": 4575,
+    "h": 2866
+  },
+  {
+    "id": "devils-marbles",
+    "term": "Karlu Karlu Devils Marbles",
+    "title": "File:Karlu Karlu Rocks in Devils Marbles Conservation Reserve, NT.jpg",
+    "thumburl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Karlu_Karlu_Rocks_in_Devils_Marbles_Conservation_Reserve%2C_NT.jpg/1920px-Karlu_Karlu_Rocks_in_Devils_Marbles_Conservation_Reserve%2C_NT.jpg",
+    "descurl": "https://commons.wikimedia.org/wiki/File:Karlu_Karlu_Rocks_in_Devils_Marbles_Conservation_Reserve,_NT.jpg",
+    "artist": "Warren Poole",
+    "license": "CC BY-SA 4.0",
+    "w": 6000,
+    "h": 4000
+  },
+  {
+    "id": "blue-mountains",
+    "term": "Three Sisters Blue Mountains Katoomba",
+    "title": "File:Blue Mountains National Park (AU), Three Sisters -- 2019 -- 1983.jpg",
+    "thumburl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Blue_Mountains_National_Park_%28AU%29%2C_Three_Sisters_--_2019_--_1983.jpg/1920px-Blue_Mountains_National_Park_%28AU%29%2C_Three_Sisters_--_2019_--_1983.jpg",
+    "descurl": "https://commons.wikimedia.org/wiki/File:Blue_Mountains_National_Park_(AU),_Three_Sisters_--_2019_--_1983.jpg",
+    "artist": "Dietmar Rabich",
+    "license": "CC BY-SA 4.0",
+    "w": 6720,
+    "h": 4480
+  },
+  {
+    "id": "queenstown",
+    "term": "Queenstown New Zealand Remarkables Lake Wakatipu",
+    "title": "File:The Remarkables from Queenstown, New Zealand 04.jpg",
+    "thumburl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/The_Remarkables_from_Queenstown%2C_New_Zealand_04.jpg/1920px-The_Remarkables_from_Queenstown%2C_New_Zealand_04.jpg",
+    "descurl": "https://commons.wikimedia.org/wiki/File:The_Remarkables_from_Queenstown,_New_Zealand_04.jpg",
+    "artist": "Σ64",
+    "license": "CC BY 4.0",
+    "w": 6000,
+    "h": 4000
+  },
+  {
+    "id": "kimberley",
+    "term": "Bungle Bungles Purnululu",
+    "title": "File:The Bungle Bungles, Purnululu National Park.jpg",
+    "thumburl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/The_Bungle_Bungles%2C_Purnululu_National_Park.jpg/1920px-The_Bungle_Bungles%2C_Purnululu_National_Park.jpg",
+    "descurl": "https://commons.wikimedia.org/wiki/File:The_Bungle_Bungles,_Purnululu_National_Park.jpg",
+    "artist": "Emily Cox",
+    "license": "CC BY-SA 4.0",
+    "w": 3855,
+    "h": 2481
+  }
+]
