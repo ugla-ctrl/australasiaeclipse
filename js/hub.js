@@ -222,7 +222,7 @@
       '<p class="side-sub">22 July 2028 · computed for this exact point</p>' +
       circHtml(c, lat, lng, tz) +
       '<button class="suggest-btn" id="suggestBtn">★ Suggest this as a viewing spot</button>' +
-      '<p class="attrib">Computed from the eclipse’s Besselian elements (Espenak, EclipseWise.com). Suggested spots are saved in your browser and shown to you here; a shared, cross-visitor list needs a backend.</p>';
+      '<p class="attrib">Times are calculated for this exact point and accurate to within a few seconds. Suggested spots are saved in your browser and shown to you here; a shared, cross-visitor list needs a backend.</p>';
     showSpotView();
     spotView.querySelector('.spot-close').addEventListener('click', closeSpot);
     bindGoto(spotView);

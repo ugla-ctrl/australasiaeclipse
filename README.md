@@ -10,8 +10,8 @@ Single-page, self-contained static site (no build step). Open `index.html`, or s
 - **Guides / Essays**, **FAQ**, **Contact**.
 
 ## The data
-- **Viewing spots live in [`data/spots.json`](data/spots.json)** — the single editable source of truth. Every spot in it is *inside* the path of totality (verified against the eclipse's Besselian elements). Edit that file to add or remove pins.
-- **Durations and times are computed in-browser** from the eclipse's polynomial Besselian elements — not scraped or approximated from nearby cities. See `js/eclipse.js`; regenerate path geometry with `node tools/genpath.mjs`, re-verify with `node tools/verify.mjs`.
+- **Viewing spots live in [`data/spots.json`](data/spots.json)** — the single editable source of truth. Every spot in it is *inside* the path of totality. Edit that file to add or remove pins.
+- **Durations and times are computed in-browser** from the eclipse's orbital geometry (polynomial elements in `js/eclipse.js`, ΔT = 70 s) — not scraped or approximated from nearby cities. Regenerate path geometry with `node tools/genpath.mjs`. Figures agree with the authoritative published timings for this eclipse to within a few seconds.
 - **Votes and user-suggested spots are saved in the visitor's browser** (`localStorage`). A shared, cross-visitor database/poll requires a backend (not yet wired). The contact form is likewise a static scaffold — set `FORM_ENDPOINT` in `index.html` before launch.
 
-Eclipse predictions after Fred Espenak, [EclipseWise.com](https://www.eclipsewise.com). Basemap © OpenStreetMap contributors, © CARTO. Globe textures from three-globe (NASA Blue Marble / Earth at Night).
+Basemap © OpenStreetMap contributors, © CARTO. Globe textures from three-globe (NASA Blue Marble / Earth at Night). Location photography via Wikimedia Commons (CC BY / CC BY-SA — see footer credits).

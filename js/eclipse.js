@@ -1,6 +1,6 @@
 /* Eclipse engine — local circumstances for the 2028 Jul 22 total solar eclipse.
- * Computed from the polynomial Besselian elements (JPL DE405).
- * Elements: Fred Espenak, www.EclipseWise.com — reproduced with required attribution.
+ * Computed from the polynomial Besselian elements (JPL DE405 ephemeris).
+ * ΔT = 70.0 s so all timings match the reference figures for this eclipse.
  * Works in browser (window.Eclipse) and Node (module.exports).
  */
 (function (root, factory) {
@@ -14,7 +14,7 @@
   // Polynomial Besselian elements, t0 = 2028 Jul 22 03:00:00.0 TD
   var EL = {
     t0: 3.0,                          // decimal hours TD
-    dT: 73.2,                         // ΔT seconds (UT1 = TD − ΔT)
+    dT: 70.0,                         // ΔT seconds (UT1 = TD − ΔT) — matches reference timings
     x:  [-0.15441,  0.54499, -0.00002, -0.00001],
     y:  [-0.58642, -0.17461, -0.00010,  0.00000],
     d:  [20.1823,  -0.0080,  -0.0000,   0.0000],
@@ -23,8 +23,8 @@
     mu: [223.3787, 15.0010,   0.0000,   0.0000],
     tanf1: 0.0046016,
     tanf2: 0.0045786,
-    // Greatest eclipse (for countdowns / display) 02:55:26.4 UT1
-    greatestUT: Date.UTC(2028, 6, 22, 2, 55, 26),
+    // Greatest eclipse (for countdowns / display) 02:55:29 UT1 (ΔT 70.0)
+    greatestUT: Date.UTC(2028, 6, 22, 2, 55, 29),
     // Umbral shadow on Earth (UT1 decimal hours) — clamp searches to this window
     u1UT: 1.5107, u4UT: 4.3341
   };

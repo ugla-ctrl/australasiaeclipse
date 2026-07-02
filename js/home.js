@@ -5,7 +5,7 @@
   'use strict';
 
   // ---------- Countdown (greatest eclipse 2028-07-22 02:55:26 UT) ----------
-  var TARGET = Date.UTC(2028, 6, 22, 2, 55, 26);
+  var TARGET = Date.UTC(2028, 6, 22, 2, 55, 29);
   var el = { d: document.getElementById('cd-d'), h: document.getElementById('cd-h'), m: document.getElementById('cd-m'), s: document.getElementById('cd-s') };
   function tick() {
     var left = Math.max(0, TARGET - Date.now());

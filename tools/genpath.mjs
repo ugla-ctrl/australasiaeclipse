@@ -43,8 +43,9 @@ function edgeDist(lat, lng, brg, maxKm = 300) {
   return (lo + hi) / 2;
 }
 
-// --- Central line (TD hours). Umbra window UT 1.5107→4.3341 → TD +0.02033h
-const T0 = 1.5107 + 73.2 / 3600, T1 = 4.3341 + 73.2 / 3600;
+// --- Central line (TD hours). Umbra contact instants are ΔT-independent (fixed TD):
+//     U1 = 01:31:51.9 TD, U4 = 04:21:15.8 TD.
+const T0 = 1.53108, T1 = 4.35439;
 const central = [];
 for (let t = T0 + 0.002; t <= T1 - 0.002; t += 0.008) {
   const p = E.centralPoint(t);
@@ -77,7 +78,7 @@ for (let t = T0 + 0.004; t <= T1 - 0.004; t += 0.025) {
   }
   const c = E.circumstances(p.lat, p.lng, 0);
   frames.push({
-    ut: +((t - 73.2 / 3600)).toFixed(4),           // UT decimal hours
+    ut: +((t - E.EL.dT / 3600)).toFixed(4),         // UT decimal hours (ΔT from engine)
     c: [+p.lat.toFixed(3), +p.lng.toFixed(3)],
     dur: c && c.duration, ring
   });
