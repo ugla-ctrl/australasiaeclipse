@@ -18,12 +18,12 @@
 
 <!-- Animated slideshow of the actual viewing-spot landscapes (theme background) -->
 <div id="bgshow" aria-hidden="true">
-  <div class="bgslide" style="background-image:url(assets/bg/sydney.jpg)"></div>
-  <div class="bgslide" style="background-image:url(assets/bg/kimberley.jpg)"></div>
-  <div class="bgslide" style="background-image:url(assets/bg/devils-marbles.jpg)"></div>
-  <div class="bgslide" style="background-image:url(assets/bg/blue-mountains.jpg)"></div>
-  <div class="bgslide" style="background-image:url(assets/bg/milford.jpg)"></div>
-  <div class="bgslide" style="background-image:url(assets/bg/queenstown.jpg)"></div>
+  <div class="bgslide" data-name="Sydney Harbour, NSW" style="background-image:url(assets/bg/sydney.jpg)"></div>
+  <div class="bgslide" data-name="The Kimberley, WA" style="background-image:url(assets/bg/kimberley.jpg)"></div>
+  <div class="bgslide" data-name="Devils Marbles, NT" style="background-image:url(assets/bg/devils-marbles.jpg)"></div>
+  <div class="bgslide" data-name="Blue Mountains, NSW" style="background-image:url(assets/bg/blue-mountains.jpg)"></div>
+  <div class="bgslide" data-name="Milford Sound, NZ" style="background-image:url(assets/bg/milford.jpg)"></div>
+  <div class="bgslide" data-name="Queenstown, NZ" style="background-image:url(assets/bg/queenstown.jpg)"></div>
 </div>
 <div id="bgshade" aria-hidden="true"></div>
 
@@ -62,6 +62,7 @@
       <a class="btn btn-ghost" href="#contact">Get updates</a>
     </div>
   </div>
+  <div class="bg-caption" id="bgCaption"></div>
   <a class="scroll-hint" href="#countdown">Scroll</a>
 </section>
 
@@ -342,7 +343,10 @@
   var slides = [].slice.call(document.querySelectorAll('#bgshow .bgslide'));
   if (!slides.length) return;
   var i = 0, HOLD = 7000;
+  var cap = document.getElementById('bgCaption');
+  function setCaption(idx) { if (!cap) return; cap.style.opacity = 0; setTimeout(function () { cap.textContent = slides[idx].getAttribute('data-name') || ''; cap.style.opacity = 1; }, 300); }
   slides[0].classList.add('on');
+  if (cap) cap.textContent = slides[0].getAttribute('data-name') || '';
   // preload the rest so crossfades don't pop
   slides.forEach(function (s) { var u = (s.style.backgroundImage.match(/url\(["']?([^"')]+)/) || [])[1]; if (u) { var im = new Image(); im.src = u; } });
   function advance() {
@@ -350,6 +354,7 @@
     slides[i].classList.remove('on');
     i = (i + 1) % slides.length;
     slides[i].classList.add('on');
+    setCaption(i);
   }
   setInterval(advance, HOLD);
 })();
