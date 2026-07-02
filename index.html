@@ -4,45 +4,49 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Australasia Eclipse 2028 — Total Solar Eclipse, July 22</title>
-<meta name="description" content="A dedicated home for the July 22, 2028 total solar eclipse across Australasia — chase planning, an interactive path-of-totality map, travel guides and community stories.">
+<meta name="description" content="A dedicated home for the July 22, 2028 total solar eclipse across Australasia — an interactive path-of-totality map, chase planning, travel guides and community stories.">
 <meta property="og:title" content="Australasia Eclipse 2028">
 <meta property="og:description" content="Up to 5 minutes 10 seconds of totality across Australia and New Zealand — and the first total eclipse over Sydney since 1857.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="css/style.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='34' fill='none' stroke='%23f5c86b' stroke-width='6'/><circle cx='50' cy='50' r='26' fill='%2307080d'/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='34' fill='none' stroke='%23f5c86b' stroke-width='6'/><circle cx='50' cy='50' r='26' fill='%23060609'/></svg>">
 </head>
-<body>
+<body id="top">
 
 <header class="topbar">
-  <a class="wordmark" href="index.html">AUSTRALASIA ECLIPSE 2028<span class="dot">.</span></a>
+  <a class="wordmark" href="#top">AUSTRALASIA ECLIPSE 2028<span class="dot">.</span></a>
   <button class="nav-toggle" aria-label="Menu">☰</button>
   <nav class="mainnav">
-    <a href="index.html" class="active">Home</a>
-    <a href="hub.html">EclipseSeeker Hub</a>
-    <a href="blog.html">Blog</a>
-    <a href="faq.html">FAQ</a>
-    <a href="contact.html" class="cta-pill">Get Updates</a>
+    <a href="#top">Home</a>
+    <a href="#hub">The Path</a>
+    <a href="#guides">Guides</a>
+    <a href="#faq">FAQ</a>
+    <a href="#contact" class="cta-pill">Get Updates</a>
   </nav>
 </header>
 
+<!-- ============ HERO ============ -->
 <section class="hero">
   <canvas id="heroCanvas" aria-hidden="true"></canvas>
   <div class="hero-inner">
+    <div class="kicker">22 July 2028 · Australia &amp; New Zealand</div>
     <h1>Australasia Eclipse 2028</h1>
-    <p class="sub">A dedicated home for the July 22, 2028 total solar eclipse across Australasia — chase planning, travel guides and community stories.</p>
+    <p class="sub">The Moon’s shadow crosses a continent and an ocean in a single afternoon. Find your place inside the path of totality.</p>
     <div class="hero-ctas">
-      <a class="btn btn-primary" href="hub.html">Shape the Path</a>
-      <a class="btn btn-ghost" href="contact.html">Get Updates</a>
+      <a class="btn btn-primary" href="#hub">Explore the path</a>
+      <a class="btn btn-ghost" href="#contact">Get updates</a>
     </div>
   </div>
-  <div class="scroll-hint">Scroll</div>
+  <a class="scroll-hint" href="#countdown">Scroll</a>
 </section>
 
-<section class="countdown-wrap section">
+<!-- ============ COUNTDOWN ============ -->
+<section class="countdown-wrap section tight" id="countdown">
   <div class="eyebrow">Countdown to totality</div>
-  <div class="countdown" id="countdown">
+  <div class="countdown">
     <div class="count-cell"><div class="num" id="cd-d">—</div><div class="lab">Days</div></div>
     <div class="count-cell"><div class="num" id="cd-h">—</div><div class="lab">Hours</div></div>
     <div class="count-cell"><div class="num" id="cd-m">—</div><div class="lab">Minutes</div></div>
@@ -51,10 +55,11 @@
   <p class="lede" style="margin: 22px auto 0;">until the Moon’s shadow reaches greatest eclipse over the Kimberley — 22 July 2028, 12:55 pm AWST.</p>
 </section>
 
-<section class="section">
-  <div class="eyebrow violet">The event</div>
+<!-- ============ THE EVENT ============ -->
+<section class="section" id="event">
+  <div class="eyebrow gold">The event</div>
   <h2 class="section-title">One shadow. Two countries.<br>Five minutes of night at noon.</h2>
-  <p class="lede">On 22 July 2028 the Moon’s umbra makes landfall on the Kimberley coast, crosses the entire Australian continent through the Red Centre and the heart of Sydney, then sweeps the South Island of New Zealand — all in under three hours.</p>
+  <p class="lede">On 22 July 2028 the Moon’s umbra makes landfall on the Kimberley coast, crosses the Australian continent through the Red Centre and the heart of Sydney, then sweeps the South Island of New Zealand — all in under three hours.</p>
   <div class="stats" style="margin-top: 44px;">
     <div class="stat"><div class="big">5m 10s</div><div class="cap">maximum totality, near the Kimberley — one of the longest this century</div></div>
     <div class="stat"><div class="big">230 km</div><div class="cap">width of the Moon’s shadow at greatest eclipse</div></div>
@@ -63,38 +68,298 @@
   </div>
 </section>
 
-<section class="section">
-  <div class="eyebrow">The Eclipse Trilogy</div>
+<!-- ============ HUB / MAP ============ -->
+<section class="hub-section" id="hub">
+  <div class="hub-head">
+    <div class="eyebrow gold">Path of totality</div>
+    <h2 class="section-title">Find your place in the shadow</h2>
+    <p class="lede">The shaded band is where the Sun disappears completely. Only inside it do you get totality; a step outside and you get a partial eclipse — dramatic, but not the same event. Click any pin for exact local circumstances, or click anywhere on the map to check a spot and suggest it to the community.</p>
+  </div>
+  <div class="hub-shell">
+    <div class="map-pane">
+      <div id="map"></div>
+      <div id="globe"></div>
+
+      <button class="play-shadow" id="playShadow">▶&nbsp; Watch the shadow cross</button>
+      <div class="shadow-clock" id="shadowClock">
+        <div class="t" id="shadowTime">—</div>
+        <div class="d" id="shadowDur">—</div>
+      </div>
+
+      <div class="map-controls">
+        <div class="seg" id="segView">
+          <button data-v="2d" class="on">2D</button>
+          <button data-v="3d">3D</button>
+        </div>
+        <div class="seg" id="segLight">
+          <button data-l="day" class="cool">DAY</button>
+          <button data-l="night" class="on">NIGHT</button>
+        </div>
+      </div>
+
+      <div class="map-legend">
+        <div class="row"><span class="swatch band"></span> Path of totality (~230 km wide)</div>
+        <div class="row"><span class="swatch central"></span> Central line — longest totality</div>
+        <div class="row"><span class="swatch limit"></span> Northern &amp; southern limits</div>
+        <div class="row"><span class="swatch pin"><i></i></span> Viewing spots (all inside the path)</div>
+        <div class="hint">Click anywhere on the map for exact local circumstances.</div>
+      </div>
+    </div>
+
+    <aside class="side-pane" id="sidePane">
+      <div id="pollView">
+        <div class="eyebrow gold">Community poll</div>
+        <div class="poll-head">
+          <h2>Where the chasers are going</h2>
+        </div>
+        <p class="side-sub" id="pollMeta">— votes cast · Click a pin, or the map, to add yours.</p>
+        <button class="poll-add" id="pollAdd">+ Suggest a spot</button>
+        <div id="pollList" style="margin-top:14px;"></div>
+        <p class="attrib">Every pin sits inside the path of totality. Durations &amp; times are computed from the eclipse’s Besselian elements — Eclipse Predictions by Fred Espenak, <a href="https://www.eclipsewise.com" target="_blank" rel="noopener">www.EclipseWise.com</a>. Basemap © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors, © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>. Votes &amp; suggestions are saved in your browser.</p>
+      </div>
+      <div id="spotView" style="display:none;"></div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ GUIDES / BLOG ============ -->
+<section class="section" id="guides">
+  <div class="eyebrow gold">The Eclipse Trilogy</div>
   <h2 class="section-title">Three eclipses. Three summers. One story.</h2>
   <p class="lede">Australasia 2028 closes a rare three-year run of total solar eclipses — the same rhythm, the same season, a different edge of the world each time.</p>
-  <div class="trilogy" style="margin-top: 44px;">
+  <div class="trilogy" style="margin: 44px 0 20px;">
     <a class="tri-card" href="https://eclipseflight.com" target="_blank" rel="noopener">
-      <div class="year">’26</div>
-      <h3>Iceland — the Initiation</h3>
+      <div class="year">’26</div><h3>Iceland — the Initiation</h3>
       <p>August 12, 2026. Iceland beneath totality for the first time since 1954. Not again until 2196.</p>
       <span class="tag">Iceland Eclipse →</span>
     </a>
     <a class="tri-card" href="https://egypt-eclipse.com" target="_blank" rel="noopener">
-      <div class="year">’27</div>
-      <h3>Egypt — the Activation</h3>
+      <div class="year">’27</div><h3>Egypt — the Activation</h3>
       <p>August 2, 2027. Six minutes and twenty-three seconds — the longest totality remaining this century.</p>
       <span class="tag">Egypt Eclipse →</span>
     </a>
-    <a class="tri-card" href="hub.html">
-      <div class="year">’28</div>
-      <h3>Australasia — the Ascension</h3>
+    <a class="tri-card" href="#hub">
+      <div class="year">’28</div><h3>Australasia — the Ascension</h3>
       <p>July 22, 2028. From the Kimberley through Sydney to Fiordland — the trilogy ends where cosmological memory began.</p>
       <span class="tag">Explore the path →</span>
     </a>
   </div>
 </section>
 
+<div class="divider"></div>
+
+<section class="section" id="blog">
+  <div class="eyebrow">From the journal</div>
+  <h2 class="section-title" style="margin-bottom: 34px;">Essays</h2>
+  <div class="blog-grid">
+    <div class="post-card" data-article="trilogy">
+      <img class="thumb" src="assets/blog/trilogy-cover.jpg" alt="The Eclipse Trilogy" loading="lazy">
+      <div class="body">
+        <div class="eyebrow">Feature</div><h3>The Eclipse Trilogy</h3>
+        <p>Three total solar eclipses. Three successive summers. Why this window is rare — and why continuity changes everything.</p>
+        <span class="more">Read the full article →</span>
+      </div>
+    </div>
+    <div class="post-card" data-article="gatherings">
+      <img class="thumb" src="assets/blog/gatherings-cover.jpg" alt="The Future of Celestial Gatherings" loading="lazy">
+      <div class="body">
+        <div class="eyebrow">Feature</div><h3>The Future of Celestial Gatherings</h3>
+        <p>Gathering at the edge of the world as rehearsal for interplanetary civilization.</p>
+        <span class="more">Read the full article →</span>
+      </div>
+    </div>
+    <div class="post-card" data-article="opportunity">
+      <img class="thumb" src="assets/blog/opportunity-cover.jpg" alt="The Opportunity in Totality" loading="lazy">
+      <div class="body">
+        <div class="eyebrow">Feature</div><h3>The Opportunity in Totality</h3>
+        <p>Realigning human civilization with the cosmos — from Stonehenge to Snæfellsnes.</p>
+        <span class="more">Read the full article →</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ============ FAQ ============ -->
+<section class="section" id="faq">
+  <div class="eyebrow gold">Good to know</div>
+  <h2 class="section-title" style="text-align:center;">FAQ</h2>
+  <p class="lede" style="margin: 0 auto 34px; text-align:center;">Answers to the questions eclipse chasers ask most — visas, kids, cameras, cruise ships, and why you really do need to be inside the path.</p>
+  <div class="faq-list">
+    <div class="faq-item"><button class="faq-q">When exactly does the eclipse happen?</button><div class="faq-a"><div class="faq-a-inner"><b>Saturday, 22 July 2028.</b> The Moon’s shadow makes landfall on the Kimberley coast of Western Australia around <b>11:00 am AWST</b>, crosses the continent through the Red Centre, reaches <b>Sydney at 2:01 pm AEST</b>, and sweeps New Zealand’s South Island around <b>4:15 pm NZST</b> — all in under three hours. Use the <a href="#hub">map above</a> to get the exact second for any point.</div></div></div>
+    <div class="faq-item"><button class="faq-q">Do I really need to be inside the path of totality?</button><div class="faq-a"><div class="faq-a-inner">Yes — and this is the one thing veterans wish someone had told them. A 98% partial eclipse is <b>not 98% of the experience</b>; it’s a slightly dim afternoon. Only inside the ~230&nbsp;km-wide path does the Sun fully vanish: stars appear at midday, the horizon glows 360° like sunset, the temperature drops, and the corona hangs visibly in the sky. That’s why every pin on our map sits inside the path.</div></div></div>
+    <div class="faq-item"><button class="faq-q">How long does totality last?</button><div class="faq-a"><div class="faq-a-inner">It depends where you stand. The maximum is <b>5 minutes 10 seconds</b> near the Kimberley — one of the longest totalities of the century. Devils Marbles gets ~4m 55s, Dubbo ~3m 49s, <b>Sydney Harbour ~3m 48s</b>, and New Zealand’s South Island 2½–3 minutes with a dramatic low winter Sun. Duration falls off toward the path edges, so aim for the central line.</div></div></div>
+    <div class="faq-item"><button class="faq-q">What’s special about Sydney this time?</button><div class="faq-a"><div class="faq-a-inner">The last total solar eclipse over Sydney was in <b>1857</b> — 171 years before this one. On eclipse day the entire harbour, CBD, Royal Botanic Garden and Opera House sit inside the path, with totality at 2:01&nbsp;pm and the Sun 29° above the north-western sky. It will likely be the most-witnessed totality in Australian history.</div></div></div>
+    <div class="faq-item"><button class="faq-q">Is it safe to watch? What about kids?</button><div class="faq-a"><div class="faq-a-inner">Absolutely — with one rule. During all partial phases you must use <b>ISO 12312-2 certified eclipse glasses</b> (sunglasses are never enough). During totality itself, glasses come <b>off</b> — the corona is about as bright as the full Moon and completely safe with the naked eye. Kids handle it brilliantly; rehearse the “glasses on / glasses off” moment beforehand, and order glasses early — they sell out continent-wide in the final weeks.</div></div></div>
+    <div class="faq-item"><button class="faq-q">Should I photograph it?</button><div class="faq-a"><div class="faq-a-inner">If this is your first totality, seriously consider <b>not</b> photographing it — the minutes go faster than you can imagine. If you must: you need a certified solar filter for every partial phase (for the lens, not just your eyes), a tripod, and a rehearsed plan for removing the filter at second contact. A phone on a small tripod shooting wide video captures the darkness, the horizon glow and the crowd reaction — often the best souvenir with the least fuss.</div></div></div>
+    <div class="faq-item"><button class="faq-q">What are the weather odds in July?</button><div class="faq-a"><div class="faq-a-inner">July is the <b>dry season</b> across northern and central Australia — historical clear-sky odds run <b>~85–90%</b> in the Kimberley and the Red Centre, among the best anywhere on the path. Outback NSW runs ~75%. Sydney in winter is closer to a coin flip (~50%). New Zealand’s South Island is the riskiest and the most beautiful: Fiordland is one of the wettest places on Earth, though a mountain vantage above the cloud deck can save the day.</div></div></div>
+    <div class="faq-item"><button class="faq-q">Do I need a visa for Australia or New Zealand?</button><div class="faq-a"><div class="faq-a-inner">Most visitors need only an electronic travel authority: Australia’s <b>eVisitor / ETA</b> and New Zealand’s <b>NZeTA</b> are typically granted online in minutes to days for US, UK, EU, Canadian, Japanese and many other passports. If you’re doing both countries (many chasers are), sort both before you fly. Check the official government sites for your nationality well ahead of eclipse season.</div></div></div>
+    <div class="faq-item"><button class="faq-q">Wait — it’s winter there in July?</button><div class="faq-a"><div class="faq-a-inner">Yes — the southern winter, and it’s a feature. Outback days are mild (high teens to low 20s °C) with crisp, transparent skies; nights are cold and star-drenched. Sydney winter afternoons average ~17&nbsp;°C. New Zealand’s South Island will be genuinely alpine-cold with a low golden Sun — pack layers and enjoy totality with snow on the Remarkables.</div></div></div>
+    <div class="faq-item"><button class="faq-q">Can I see it from a cruise ship?</button><div class="faq-a"><div class="faq-a-inner">Yes. The path crosses the Indian Ocean before landfall and the Tasman Sea between Australia and New Zealand, and eclipse cruises position ships on the central line with the freedom to dodge cloud — the trick land-based chasers envy. The trade-off: a moving deck makes long-lens photography hard. For most people the naked-eye experience from a ship is spectacular.</div></div></div>
+    <div class="faq-item"><button class="faq-q">Where do the duration numbers on this site come from?</button><div class="faq-a"><div class="faq-a-inner">We compute them directly from the eclipse’s published <b>Besselian elements</b> (Fred Espenak, EclipseWise.com) — the same math NASA’s tables are built from — for any point you click, live in your browser. No third-party embeds, no approximations from nearby cities. Verified against the official central-line tables to within seconds.</div></div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ============ CONTACT ============ -->
+<section class="section" id="contact">
+  <div class="eyebrow" style="text-align:center;">Stay in the loop</div>
+  <h2 class="section-title" style="text-align:center;">Get updates</h2>
+  <p class="lede" style="margin: 0 auto 34px; text-align:center;">Sign up for chase planning, weather calls and community stories as 22 July 2028 approaches.</p>
+  <form class="contact-box" id="contactForm" novalidate>
+    <div class="field"><input type="text" id="cName" placeholder="Name" autocomplete="name"></div>
+    <div class="field"><input type="email" id="cEmail" placeholder="Email*" required autocomplete="email"></div>
+    <div class="field"><textarea id="cMsg" placeholder="Message (optional)"></textarea></div>
+    <label class="check-row"><input type="checkbox" id="cList" checked><span>Sign up for our email list for updates, promotions, and more.</span></label>
+    <button class="send-btn" type="submit">Send</button>
+    <p class="form-note" id="formNote"></p>
+  </form>
+</section>
+
 <footer>
   <div>Copyright © 2026 Australasia Eclipse 2028 — All Rights Reserved.</div>
-  <div class="powered">Powered by <a href="#">EclipseSeekers</a></div>
+  <div class="powered">Powered by <a href="#top">EclipseSeekers</a></div>
+  <div class="fine">Eclipse predictions after Fred Espenak, <a href="https://www.eclipsewise.com" target="_blank" rel="noopener">EclipseWise.com</a>.</div>
 </footer>
 
+<!-- ============ ARTICLE MODALS ============ -->
+<div class="article-modal" id="modal-trilogy"><div class="article-box"><div class="article-head"><span class="eyebrow">Feature</span><button class="article-close">Close ✕</button></div><div class="article-body">
+  <img class="cover" src="assets/blog/trilogy-cover.jpg" alt="The Eclipse Trilogy">
+  <h1>The Eclipse Trilogy</h1>
+  <p class="byline">By Mitch Morales · <a href="https://www.linkedin.com/pulse/eclipse-trilogy-mitch-morales-qvgvc" target="_blank" rel="noopener">Originally published on LinkedIn</a></p>
+  <p>Last week, I wrote about the Ancient Blueprint and how humanity's oldest monuments were built in precise alignment with the cosmos. And how our ancestors understood something we've largely forgotten: that civilization is most powerful when synchronized with larger rhythms.</p>
+  <p>There is a specific window opening right now that I think demands that same lens.</p>
+  <p>Total solar eclipses are rarer than most people assume. They don't happen annually, rather, roughly every 18 months somewhere on Earth. For any given location, totality passes once every several centuries. When one arrives, it arrives as an isolated event: a different season, a different hemisphere, a different context from whatever came before or after.</p>
+  <p>That makes what's happening right now unusual: In 2026, a total solar eclipse crosses Northwestern Europe. In 2027, another totality arrives over Northern Africa. In 2028, a third crosses Australasia. Three total solar eclipses. Three successive years. All arriving in the same window of the calendar. The same rhythm, the same season.</p>
+  <p>The next time this pattern repeats is not until 2044 to 2046, which is coincidentally the same wait for another eclipse over the United States. What we are inside right now is rare by any measure.</p>
+  <h2>The Celestial Mechanics</h2>
+  <p>To understand why this convergence is unusual, it helps to know something about Saros cycles.</p>
+  <p>A Saros is a period of approximately 18 years, 11 days, and 8 hours. After one Saros, the Earth, Moon, and Sun return to nearly identical relative geometry — an eclipse occurs again, in the same celestial family as its predecessor. These families, called Saros Series, last 1,200 to 1,500 years, producing 70 to 80 eclipses each.</p>
+  <p>The 2026 eclipse belongs to Saros 126 — born in 1179 CE, now on its 48th appearance of 72, continuing until 2459. When totality crosses Northwestern Europe this August, it is one chapter in a lineage that has been unfolding for nine centuries and will continue for four more.</p>
+  <p>The three eclipses of this window don't share the same Saros family. They are distinct astronomical lineages arriving in the same concentrated span. That is precisely what makes the convergence rare.</p>
+  <h2>Why Continuity Changes Everything</h2>
+  <p>Eclipses are usually standalone events. Different times and different places means each one exists disconnected from what came before or after. You gather, you witness, you disperse.</p>
+  <p>This window removes one of those variables.</p>
+  <p>The same season, arriving year after year, means that some continuity, seen in more traditional gatherings, can return. The same builders, scientists, artists, seekers may reconvene under a different sky, on a different continent, but inside the same story. That rhythm is rare. And rhythm is the precondition for mythology.</p>
+  <blockquote>One gathering is a spectacle. Three, anchored in time, become something else.</blockquote>
+  <h2>People Are Looking for This</h2>
+  <p>My last piece ended with the shift from materialism to experientialism, a civilization-wide hunger for meaning that transcends the systems we've built.</p>
+  <p>What I'm seeing is more specific: people are looking for a real hero's journey. Not a metaphor for one. An actual pilgrimage with stakes, with shape, with other humans alongside them. The Trilogy gives that shape. If you witness all three, crossing the same threshold in a different land, three summers in a row, you become part of a story most people will never have the chance to experience in their lifetimes.</p>
+  <h2>Where to see the Three</h2>
+  <p><b>Iceland 2026 is the Initiation.</b> The threshold, the call, the edge of the known world. On August 12, Iceland will be beneath totality for the first time since 1954. Not again until 2196.</p>
+  <p><b>Egypt 2027 is the Activation.</b> On August 2, 2027, the longest remaining total solar eclipse of the 21st century. Six minutes and twenty-three seconds of totality. Not surpassed until 2114. Northern Africa, at the heart of human civilization's oldest story. That duration isn't incidental, it is an entirely different experience of totality. Time enough to feel something shift.</p>
+  <p><b>Australasia 2028 is the Ascension.</b> On July 22, 2028, the path of totality crosses Australia from the northwest, through the outback and Sydney, continuing to the south island of New Zealand. To close the trilogy here, in the southern winter, is to end where human cosmological memory arguably began.</p>
+  <h2>Egypt is Next</h2>
+  <p>This Sunday, on the northern summer solstice, we announce Egypt Eclipse 2027.</p>
+  <p>The timing is not accidental. It was programmed.</p>
+  <a class="outlink" href="https://egypt-eclipse.com" target="_blank" rel="noopener">egypt-eclipse.com</a> &nbsp;·&nbsp; <a class="outlink" href="https://www.linkedin.com/pulse/eclipse-trilogy-mitch-morales-qvgvc" target="_blank" rel="noopener">Read on LinkedIn →</a>
+</div></div></div>
+
+<div class="article-modal" id="modal-gatherings"><div class="article-box"><div class="article-head"><span class="eyebrow">Feature</span><button class="article-close">Close ✕</button></div><div class="article-body">
+  <img class="cover" src="assets/blog/gatherings-cover.jpg" alt="The Future of Celestial Gatherings">
+  <h1>The Future of Celestial Gatherings</h1>
+  <p class="byline">By Mitch Morales · <a href="https://www.linkedin.com/pulse/future-celestial-gatherings-mitch-morales-9vxic" target="_blank" rel="noopener">Originally published on LinkedIn</a></p>
+  <p>The people gathering at Iceland Eclipse share a common trait: an appetite for the edge.</p>
+  <p>The volcanic peninsula. The black sand. The glacier Jules Verne evoked on his journey to the center of the Earth. The light that doesn't fully disappear.</p>
+  <p>People are not just coming for the eclipse. They are coming to the edge of the known world, to be with others who chose the same.</p>
+  <h2>The Real Precedent</h2>
+  <p>Every significant expansion of human civilization was preceded by gatherings at the frontier.</p>
+  <p>The explorers who mapped the Pacific didn't sail in isolation. They came from ports where knowledge, resources, and resolve had been concentrated. The ancient navigators who crossed the same ocean carried cosmological maps passed down through ceremony, through gathering, through collective memory built together.</p>
+  <p>The edge requires a social technology that ordinary life doesn't demand: radical trust in strangers, shared purpose under scarcity, the ability to coordinate without hierarchy, a willingness to act without certainty.</p>
+  <p>These aren't abstract virtues. They're mission-critical capabilities. And they are not built in comfort.</p>
+  <h2>What Remote Gatherings Actually Build</h2>
+  <p>When you bring thousands of people to a volcanic peninsula in Iceland, or to the plateau above Luxor, you are running an operational experiment in civilization.</p>
+  <p>What does it take to sustain thousands of people in a remote place? How do you maintain coherence when the environment is extreme, the logistics are unforgiving, and the only shared resource is an event in the sky overhead?</p>
+  <p>Food systems. Water. Energy. Social organization. Medical response. Shared governance. Identity coherence across a multilingual, multi-generational crowd.</p>
+  <p>Zoomed in, they are festival problems. But zoomed out, in the context of our interplanetary future, they are what our first permanent human outposts off this planet will face.</p>
+  <blockquote>The difference is that in Iceland, if the system fails, you go home. Off-world, there is no home to return to.</blockquote>
+  <p>This is why the rehearsal matters. Not as metaphor, rather as practice.</p>
+  <h2>The Astronauts Aren't There by Accident</h2>
+  <p>Iceland Eclipse hosts many astronauts. People who have left this planet, looked back at it from orbit, and returned. And a couple of them are joining us for the full month container.</p>
+  <p>The perspective of the overview effect is one of the most consistently transformative experiences humans have documented. It describes the dissolution of borders, the fragility of the atmosphere, the recognition that Earth is a single system.</p>
+  <p>The people building the future of human settlement off-world and the people building the cultural infrastructure of human experience on it need to be in the same rooms. They need to trust each other. They need to know each other's names. That trust is not built through a screen.</p>
+  <h2>Why Now</h2>
+  <p>The frontier doesn't wait for readiness. If you feel called, it's time to suit up and join the mission.</p>
+  <a class="outlink" href="https://icelandeclipse.com" target="_blank" rel="noopener">Sign up here: icelandeclipse.com</a> &nbsp;·&nbsp; <a class="outlink" href="https://www.linkedin.com/pulse/future-celestial-gatherings-mitch-morales-9vxic" target="_blank" rel="noopener">Read on LinkedIn →</a>
+</div></div></div>
+
+<div class="article-modal" id="modal-opportunity"><div class="article-box"><div class="article-head"><span class="eyebrow">Feature</span><button class="article-close">Close ✕</button></div><div class="article-body">
+  <img class="cover" src="assets/blog/opportunity-cover.jpg" alt="Realigning Human Civilization with the Cosmos">
+  <h1>Realigning Human Civilization with the Cosmos</h1>
+  <p class="byline">By Mitch Morales · <a href="https://www.linkedin.com/pulse/realigning-human-civilization-cosmos-mitch-morales-p4wcc" target="_blank" rel="noopener">Originally published on LinkedIn</a></p>
+  <h2>The Ancient Blueprint</h2>
+  <p>For years we've understood that humanity's oldest monuments — Stonehenge, the pyramids, Angkor Wat — were positioned according to precise celestial alignments. Our ancestors constructed the places in which they lived and celebrated to honor patterns observed within time and space. They understood something we forgot: that human civilization is most powerful when synchronized with larger rhythms.</p>
+  <p>These weren't primitive people chasing pretty sky events. They were sophisticated designers encoding cosmic intelligence into the foundations of human gathering. They built infrastructure that would serve ceremonial, economic, and social functions for millennia, all anchored to moments when Earth's relationship to the Cosmos created specific energetic conditions.</p>
+  <h2>The Present Convergence</h2>
+  <p>Interest in eclipses is at an all-time high globally. Beyond the commercial possibilities, this represents concentrated economic, creative, and physical energy seeking alignment around something larger than individual gain. Millions of people are actively seeking raw human experience and direct connection with the essence of the universe.</p>
+  <p>This is not casual interest. This is a civilization-wide hunger for meaning that transcends the systems we've built.</p>
+  <p>These destination gatherings bring sustained attention and economic energy to new geographies. But most organizers capture this energy for temporary extraction, whether intentional or not, rather than permanent transformation. We're missing the deeper opportunity: to harness this energy to create entirely new nodes of human civilization.</p>
+  <h2>The Design Opportunity</h2>
+  <p>When you build in places without legacy institutional frameworks, you can reimagine spatial design from first principles. You're not retrofitting outdated systems, but creating new ones optimized for how humans actually want to live in the 21st century.</p>
+  <p>We can forecast these cosmic moments centuries in advance. We can build forward to meet them with intentional communities, experimental governance structures, and new models for how creative and economic energy flows.</p>
+  <blockquote>Cosmic timing that creates natural gathering points, global interest that generates economic energy, and human readiness to redesign how we live together.</blockquote>
+  <h2>The Mission</h2>
+  <p>Iceland Eclipse happens 11–15 August 2026, at Snæfellsnes and is the first in a trilogy of eclipses over the next three summers, with Egypt 2027 and Australasia 2028 extending the story.</p>
+  <p>The question isn't whether you're interested in eclipses. It's whether you're ready to participate in the conscious realignment of human civilization with cosmic intelligence.</p>
+  <p>If you are, reach out. Sign up. Join us in Iceland and beyond.</p>
+  <a class="outlink" href="https://imxp.org" target="_blank" rel="noopener">imxp.org</a> &nbsp;·&nbsp; <a class="outlink" href="https://www.linkedin.com/pulse/realigning-human-civilization-cosmos-mitch-morales-p4wcc" target="_blank" rel="noopener">Read on LinkedIn →</a>
+</div></div></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/eclipse.js"></script>
 <script src="js/common.js"></script>
 <script src="js/home.js"></script>
+<script src="js/hub.js"></script>
+<script type="module" src="js/globe.js"></script>
+<script>
+/* Blog modals */
+(function () {
+  document.querySelectorAll('.post-card').forEach(function (card) {
+    card.addEventListener('click', function () {
+      document.getElementById('modal-' + card.dataset.article).classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+  function closeAll() { document.querySelectorAll('.article-modal').forEach(function (m) { m.classList.remove('open'); }); document.body.style.overflow = ''; }
+  document.querySelectorAll('.article-close').forEach(function (b) { b.addEventListener('click', closeAll); });
+  document.querySelectorAll('.article-modal').forEach(function (m) { m.addEventListener('click', function (e) { if (e.target === m) closeAll(); }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAll(); });
+})();
+/* FAQ accordion */
+document.querySelectorAll('.faq-item').forEach(function (item) {
+  var q = item.querySelector('.faq-q'), a = item.querySelector('.faq-a');
+  q.addEventListener('click', function () { var open = item.classList.toggle('open'); a.style.maxHeight = open ? a.scrollHeight + 'px' : 0; });
+});
+/* Contact (static scaffold — wire FORM_ENDPOINT before launch) */
+(function () {
+  var FORM_ENDPOINT = '';
+  var form = document.getElementById('contactForm');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = document.getElementById('cEmail'), note = document.getElementById('formNote');
+    if (!email.value || email.value.indexOf('@') < 1) { note.textContent = 'Please enter a valid email address.'; note.style.color = 'var(--accent)'; return; }
+    function done() { form.reset(); note.textContent = 'Thanks — you’re on the list. See you in the shadow.'; note.style.color = 'var(--gold)'; }
+    if (FORM_ENDPOINT) {
+      fetch(FORM_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: document.getElementById('cName').value, email: email.value, message: document.getElementById('cMsg').value, list: document.getElementById('cList').checked }) })
+        .then(done).catch(done);
+    } else { done(); }
+  });
+})();
+/* Active nav highlight on scroll */
+(function () {
+  var links = [...document.querySelectorAll('nav.mainnav a')];
+  var map = {}; links.forEach(function (l) { var id = l.getAttribute('href').slice(1); if (id) map[id] = l; });
+  var ids = Object.keys(map);
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) { links.forEach(function (l) { l.classList.remove('active'); }); if (map[en.target.id]) map[en.target.id].classList.add('active'); }
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+})();
+</script>
 </body>
 </html>

@@ -90,28 +90,25 @@ function init() {
     bandGeo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
     bandGeo.setIndex(idx);
     group.add(new THREE.Mesh(bandGeo, new THREE.MeshBasicMaterial({
-      color: 0x8b5cf6, transparent: true, opacity: 0.32, side: THREE.DoubleSide, depthWrite: false
+      color: 0xffce6a, transparent: true, opacity: 0.30, side: THREE.DoubleSide, depthWrite: false
     })));
     // central line
     const linePts = d.central.map(p => toVec(p[0], p[1], 1.008));
     const lineGeo = new THREE.BufferGeometry().setFromPoints(linePts);
-    group.add(new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: 0xc4b5fd, transparent: true, opacity: 0.95 })));
+    group.add(new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: 0xfff2d6, transparent: true, opacity: 0.95 })));
   });
 
-  // Pins
+  // Pins — read from the shared spot list loaded by hub.js
   const pinGeoT = new THREE.SphereGeometry(0.012, 12, 10);
-  SPOTS.forEach(s => {
-    const isTotal = s.circ && s.circ.type === 'total';
-    const m = new THREE.Mesh(pinGeoT, new THREE.MeshBasicMaterial({ color: isTotal ? 0x8b5cf6 : 0xf5c86b }));
+  (window.SPOTS || []).forEach(s => {
+    const suggested = !!s.suggested;
+    const col = suggested ? 0xff8a1e : 0xffce6a;
+    const m = new THREE.Mesh(pinGeoT, new THREE.MeshBasicMaterial({ color: col }));
     m.position.copy(toVec(s.lat, s.lng, 1.012));
     m.userData.spot = s;
     group.add(m);
     pinMeshes.push(m);
-    // halo
-    const halo = new THREE.Mesh(
-      new THREE.SphereGeometry(0.02, 10, 8),
-      new THREE.MeshBasicMaterial({ color: isTotal ? 0x8b5cf6 : 0xf5c86b, transparent: true, opacity: 0.25 })
-    );
+    const halo = new THREE.Mesh(new THREE.SphereGeometry(0.02, 10, 8), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.25 }));
     halo.position.copy(m.position);
     group.add(halo);
   });

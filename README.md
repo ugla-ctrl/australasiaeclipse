@@ -1,16 +1,17 @@
 # Australasia Eclipse 2028
 
-A dedicated home for the **22 July 2028 total solar eclipse** across Australasia — chase planning, an interactive path-of-totality map, travel guides and community stories.
+A dedicated home for the **22 July 2028 total solar eclipse** across Australasia — an interactive path-of-totality map, chase planning, travel guides and community stories.
 
-Self-contained static site (no build step). Open `index.html`, or serve the folder with any static host.
+Single-page, self-contained static site (no build step). Open `index.html`, or serve the folder with any static host. Everything lives on one scrolling page (`#hub`, `#guides`, `#faq`, `#contact`); the old `hub.html` / `blog.html` / `faq.html` / `contact.html` remain as redirect stubs to those anchors.
 
-## What's inside
-- **Home** — animated eclipse hero + live countdown to greatest eclipse.
-- **EclipseSeeker Hub** — interactive 2D map **and** draggable 3D globe. Click anywhere for exact local circumstances: totality duration, contact times (C1–C4), sun altitude, magnitude and obscuration. Includes a "watch the shadow cross" animation and a community poll.
-- **Blog** — three feature essays (The Eclipse Trilogy, The Future of Celestial Gatherings, The Opportunity in Totality).
-- **FAQ** and **Contact**.
+## Sections
+- **Hero + countdown** — an editorial total-eclipse corona and a live countdown to greatest eclipse.
+- **The Path** — an interactive 2D map **and** draggable 3D globe. The path of totality is drawn traditionally: shaded umbra band, solid central line, dashed northern/southern limits, all labelled. Click any pin, or anywhere on the map, for exact local circumstances: totality duration, contact times (C1–C4), sun altitude, magnitude and obscuration. Includes a "watch the shadow cross" animation, a community poll, and **suggest-a-spot**.
+- **Guides / Essays**, **FAQ**, **Contact**.
 
-## How the eclipse data works
-Totality durations and times are **computed in-browser** from the eclipse's polynomial Besselian elements — not scraped or approximated from nearby cities. See `js/eclipse.js`; regenerate the path geometry with `node tools/genpath.mjs` and re-verify with `node tools/verify.mjs`.
+## The data
+- **Viewing spots live in [`data/spots.json`](data/spots.json)** — the single editable source of truth. Every spot in it is *inside* the path of totality (verified against the eclipse's Besselian elements). Edit that file to add or remove pins.
+- **Durations and times are computed in-browser** from the eclipse's polynomial Besselian elements — not scraped or approximated from nearby cities. See `js/eclipse.js`; regenerate path geometry with `node tools/genpath.mjs`, re-verify with `node tools/verify.mjs`.
+- **Votes and user-suggested spots are saved in the visitor's browser** (`localStorage`). A shared, cross-visitor database/poll requires a backend (not yet wired). The contact form is likewise a static scaffold — set `FORM_ENDPOINT` in `index.html` before launch.
 
-Eclipse predictions after Fred Espenak, [EclipseWise.com](https://www.eclipsewise.com). Basemap © OpenStreetMap contributors, © CARTO.
+Eclipse predictions after Fred Espenak, [EclipseWise.com](https://www.eclipsewise.com). Basemap © OpenStreetMap contributors, © CARTO. Globe textures from three-globe (NASA Blue Marble / Earth at Night).
