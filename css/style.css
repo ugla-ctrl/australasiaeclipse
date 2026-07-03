@@ -71,6 +71,7 @@ img { max-width: 100%; display: block; }
 .wordmark { display: inline-flex; align-items: center; gap: 9px; font-weight: 700; letter-spacing: 0.18em; font-size: 13px; text-transform: uppercase; }
 .wordmark .dot { color: var(--accent); }
 .eclipse-mark { flex: none; display: block; filter: drop-shadow(0 0 5px rgba(255,206,106,0.55)); }
+.wm-logo { width: 36px; height: 36px; flex: none; display: block; object-fit: contain; }
 .eclipse-mark .corona { transform-origin: center; animation: coronaPulse 4.5s ease-in-out infinite; }
 @keyframes coronaPulse { 0%, 100% { transform: scale(1); opacity: 0.92; } 50% { transform: scale(1.08); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .eclipse-mark .corona { animation: none; } }
