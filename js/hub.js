@@ -200,7 +200,7 @@
     });
   }
   function showSpotView() { spotView.style.display = 'block'; pollView.style.display = 'none'; }
-  function closeSpot() { spotView.style.display = 'none'; pollView.style.display = 'block'; if (clickMarker) { map.removeLayer(clickMarker); clickMarker = null; } renderPoll(); }
+  function closeSpot() { spotView.style.display = 'none'; pollView.style.display = 'block'; if (clickMarker) { map.removeLayer(clickMarker); clickMarker = null; } if (window.__globeClearMark) window.__globeClearMark(); renderPoll(); }
 
   function openSpot(s) {
     var tz = { off: s.tz != null ? s.tz : tzFor(s.lat, s.lng).off, name: s.tzName || tzFor(s.lat, s.lng).name };
@@ -242,6 +242,7 @@
     document.getElementById('suggestBtn').addEventListener('click', function () { suggestSpot(lat, lng, c); });
     if (clickMarker) map.removeLayer(clickMarker);
     clickMarker = L.circleMarker([lat, lng], { radius: 6, color: AMBER, weight: 2, fillColor: AMBER, fillOpacity: 0.5 }).addTo(map);
+    if (window.__globeMark) window.__globeMark(lat, lng); // mirror the picked point onto the 3D globe
   }
 
   function suggestSpot(lat, lng, c) {
@@ -256,6 +257,7 @@
       SPOTS.push(s);
       saveSuggested(SPOTS.filter(function (x) { return x.suggested; }));
       addMarker(s);
+      if (window.__globeAddPin) window.__globeAddPin(s); // show the new spot on the globe too
     }
     if (clickMarker) { map.removeLayer(clickMarker); clickMarker = null; }
     castVote(s);

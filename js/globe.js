@@ -28,6 +28,54 @@ function toVec(lat, lng, r) {
   );
 }
 
+// --- pins + click-to-suggest, shared with the 2D map through window hooks ---
+let pinGeo, clickMark;
+function addPin(s) {
+  if (!group) return;
+  if (!pinGeo) pinGeo = new THREE.SphereGeometry(0.012, 12, 10);
+  const col = s.suggested ? 0xff8a1e : 0xffce6a;
+  const m = new THREE.Mesh(pinGeo, new THREE.MeshBasicMaterial({ color: col }));
+  m.position.copy(toVec(s.lat, s.lng, 1.012));
+  m.userData.spot = s;
+  group.add(m); pinMeshes.push(m);
+  const halo = new THREE.Mesh(new THREE.SphereGeometry(0.02, 10, 8), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.25 }));
+  halo.position.copy(m.position); halo.userData.spot = s; // clicking the halo selects the pin too (bigger target)
+  group.add(halo); pinMeshes.push(halo);
+}
+// Pick under the cursor. Returns {spot} if a pin was hit, else {lat,lng} on the
+// globe surface, else null. Uses an ANALYTIC unit sphere (not the faceted mesh)
+// and inverts toVec exactly, so the lat/lng is as accurate as a 2D map click.
+const _pickSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), 1);
+function pickAt(clientX, clientY) {
+  const r = renderer.domElement.getBoundingClientRect();
+  pointer.x = ((clientX - r.left) / r.width) * 2 - 1;
+  pointer.y = -((clientY - r.top) / r.height) * 2 + 1;
+  raycaster.setFromCamera(pointer, camera);
+  const pin = raycaster.intersectObjects(pinMeshes)[0];
+  if (pin) return { spot: pin.object.userData.spot };
+  const hit = new THREE.Vector3();
+  if (!raycaster.ray.intersectSphere(_pickSphere, hit)) return null;
+  globe.worldToLocal(hit); // undo the globe's rotation -> local unit-sphere coords
+  const lat = 90 - Math.acos(Math.max(-1, Math.min(1, hit.y))) / D2R;
+  let lng = Math.atan2(hit.z, -hit.x) / D2R - 180;
+  lng = ((lng % 360) + 540) % 360 - 180;
+  return { lat: lat, lng: lng };
+}
+function setMark(lat, lng) {
+  if (!group) return;
+  if (!clickMark) {
+    clickMark = new THREE.Mesh(new THREE.SphereGeometry(0.014, 12, 10), new THREE.MeshBasicMaterial({ color: 0xff8a1e }));
+    clickMark.add(new THREE.Mesh(new THREE.SphereGeometry(0.026, 12, 10), new THREE.MeshBasicMaterial({ color: 0xff8a1e, transparent: true, opacity: 0.4 })));
+    group.add(clickMark);
+  }
+  clickMark.position.copy(toVec(lat, lng, 1.013));
+  clickMark.visible = true;
+}
+function clearMark() { if (clickMark) clickMark.visible = false; }
+window.__globeAddPin = addPin;      // called by hub.js when a spot is suggested
+window.__globeMark = setMark;       // amber "your spot" marker on the globe
+window.__globeClearMark = clearMark;
+
 function init() {
   el = document.getElementById('globe');
   scene = new THREE.Scene();
@@ -98,20 +146,8 @@ function init() {
     group.add(new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: 0xfff2d6, transparent: true, opacity: 0.95 })));
   });
 
-  // Pins — read from the shared spot list loaded by hub.js
-  const pinGeoT = new THREE.SphereGeometry(0.012, 12, 10);
-  (window.SPOTS || []).forEach(s => {
-    const suggested = !!s.suggested;
-    const col = suggested ? 0xff8a1e : 0xffce6a;
-    const m = new THREE.Mesh(pinGeoT, new THREE.MeshBasicMaterial({ color: col }));
-    m.position.copy(toVec(s.lat, s.lng, 1.012));
-    m.userData.spot = s;
-    group.add(m);
-    pinMeshes.push(m);
-    const halo = new THREE.Mesh(new THREE.SphereGeometry(0.02, 10, 8), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.25 }));
-    halo.position.copy(m.position);
-    group.add(halo);
-  });
+  // Pins — read from the shared spot list loaded by hub.js (incl. saved suggestions)
+  (window.SPOTS || []).forEach(addPin);
 
   raycaster = new THREE.Raycaster();
   pointer = new THREE.Vector2();
@@ -136,14 +172,12 @@ function init() {
   });
   dom.addEventListener('pointerup', e => {
     dragging = false; dom.style.cursor = 'grab';
-    // click (not drag) → pin select
-    if (Math.abs(vx) < 0.002 && Math.abs(vy) < 0.002) {
-      const r = dom.getBoundingClientRect();
-      pointer.x = ((e.clientX - r.left) / r.width) * 2 - 1;
-      pointer.y = -((e.clientY - r.top) / r.height) * 2 + 1;
-      raycaster.setFromCamera(pointer, camera);
-      const hit = raycaster.intersectObjects(pinMeshes)[0];
-      if (hit && window.__openSpot) window.__openSpot(hit.object.userData.spot);
+    // click (not drag): select a pin, or check/suggest the exact point clicked
+    if (Math.abs(vx) < 0.003 && Math.abs(vy) < 0.003) {
+      const pick = pickAt(e.clientX, e.clientY);
+      if (!pick) return;
+      if (pick.spot) { if (window.__openSpot) window.__openSpot(pick.spot); }
+      else if (window.__openPoint) window.__openPoint(pick.lat, pick.lng);
     }
   });
   dom.addEventListener('wheel', e => {
@@ -239,7 +273,7 @@ window.addEventListener('globe:show', e => {
   running = true; lastT = performance.now();
   requestAnimationFrame(loop);
 });
-window.addEventListener('globe:hide', () => { running = false; });
+window.addEventListener('globe:hide', () => { running = false; clearMark(); });
 window.addEventListener('globe:light', e => {
   light = e.detail.light;
   if (inited) globe.material = materials[light];
