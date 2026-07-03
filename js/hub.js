@@ -331,4 +331,12 @@
     pathLayers.forEach(function (l) { l.bringToFront(); });
     window.dispatchEvent(new CustomEvent('globe:light', { detail: { light: light } }));
   });
+
+  // Default to the 3D globe (feedback: 3D should be the default view). The 3D button
+  // is pre-marked .on in the HTML; here we swap the panes and kick off the globe once
+  // its module has registered the globe:show listener (fires on window load).
+  mapEl.style.display = 'none'; globeEl.style.display = 'block';
+  var startGlobe = function () { window.dispatchEvent(new CustomEvent('globe:show', { detail: { light: light } })); };
+  if (document.readyState === 'complete') startGlobe();
+  else window.addEventListener('load', startGlobe);
 })();

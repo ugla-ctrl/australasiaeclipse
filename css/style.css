@@ -27,10 +27,16 @@ body {
 #bgshow { position: fixed; inset: 0; z-index: -2; background: var(--bg); overflow: hidden; }
 #bgshow .bgslide {
   position: absolute; inset: 0; background-size: cover; background-position: center;
-  opacity: 0; transform: scale(1.05); transition: opacity 2.4s ease-in-out; will-change: opacity, transform;
+  opacity: 0; transform: scale(1.12);
+  transition: opacity 2.4s ease-in-out, transform 2.6s ease-out;
+  will-change: opacity, transform; backface-visibility: hidden;
 }
-#bgshow .bgslide.on { opacity: 1; animation: kenburns 16s linear forwards; }
-@keyframes kenburns { from { transform: scale(1.04); } to { transform: scale(1.15); } }
+/* The base transform is the ZOOMED-IN end state. While a slide is shown, kenburns
+   drives it from 1.03 -> 1.12; when .on is removed the animation drops and the
+   transform transitions the last bit toward 1.12 — same direction, so the outgoing
+   slide never snaps back to the start of the zoom (the old jitter/flicker bug). */
+#bgshow .bgslide.on { opacity: 1; animation: kenburns 11s ease-out forwards; }
+@keyframes kenburns { from { transform: scale(1.03); } to { transform: scale(1.12); } }
 #bgshade {
   position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background:
@@ -48,7 +54,8 @@ body {
 .bg-caption::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--corona); box-shadow: 0 0 9px var(--corona); flex: none; }
 @media (max-width: 760px) { .bg-caption { font-size: 11px; left: 20px; bottom: 20px; } }
 @media (prefers-reduced-motion: reduce) {
-  #bgshow .bgslide.on { animation: none; transform: scale(1.05); }
+  #bgshow .bgslide { transition: opacity 1.2s ease-in-out; }
+  #bgshow .bgslide.on { animation: none; transform: scale(1.06); }
 }
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; display: block; }
@@ -67,6 +74,30 @@ img { max-width: 100%; display: block; }
 .eclipse-mark .corona { transform-origin: center; animation: coronaPulse 4.5s ease-in-out infinite; }
 @keyframes coronaPulse { 0%, 100% { transform: scale(1); opacity: 0.92; } 50% { transform: scale(1.08); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .eclipse-mark .corona { animation: none; } }
+.eclipse-mark .diamond { transform-origin: center; animation: twinkle 4.5s ease-in-out infinite; }
+@keyframes twinkle { 0%, 100% { opacity: 0.92; } 45% { opacity: 0.45; } 60% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .eclipse-mark .diamond { animation: none; } }
+
+/* header email capture (replaces the nav bar) */
+.header-signup { display: flex; align-items: center; gap: 8px; position: relative; }
+.header-signup input {
+  background: rgba(12, 13, 18, 0.7); border: 1px solid var(--line); border-radius: 999px;
+  color: var(--ink); font: 500 13px var(--sans); padding: 9px 16px; width: 230px; outline: none;
+  transition: border-color 0.2s;
+}
+.header-signup input::placeholder { color: var(--muted); }
+.header-signup input:focus { border-color: var(--accent); }
+.header-signup button {
+  background: var(--accent); color: #17120b; font: 600 13px var(--sans); letter-spacing: 0.03em;
+  border: 0; border-radius: 999px; padding: 9px 20px; cursor: pointer; transition: transform 0.15s, box-shadow 0.2s;
+}
+.header-signup button:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(255, 138, 30, 0.35); }
+.header-note { position: absolute; top: calc(100% + 6px); right: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+@media (max-width: 760px) {
+  .topbar { flex-wrap: wrap; gap: 10px; padding: 12px 18px; }
+  .header-signup { width: 100%; }
+  .header-signup input { flex: 1; width: auto; min-width: 0; }
+}
 nav.mainnav { display: flex; align-items: center; gap: 26px; font-size: 14px; }
 nav.mainnav a { color: var(--muted); transition: color 0.2s; }
 nav.mainnav a:hover, nav.mainnav a.active { color: var(--ink); }
@@ -118,11 +149,12 @@ h1, h2, h3, .display { font-family: var(--serif); font-weight: 500; line-height:
 }
 @keyframes bob { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 8px); } }
 
-/* ---------- Countdown ---------- */
-.countdown-wrap { text-align: center; background: rgba(9, 10, 15, 0.55); backdrop-filter: blur(9px); border-block: 1px solid var(--line); }
-.countdown { display: flex; gap: clamp(18px, 5vw, 56px); justify-content: center; flex-wrap: wrap; }
-.count-cell .num { font-family: var(--serif); font-size: clamp(40px, 6vw, 70px); font-weight: 500; font-variant-numeric: tabular-nums; }
-.count-cell .lab { font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); }
+/* ---------- Countdown (now in the hero header) ---------- */
+.hero-countdown { display: flex; gap: clamp(16px, 4.5vw, 48px); justify-content: center; flex-wrap: wrap; margin-top: 32px; }
+.hero-countdown .count-cell { text-align: center; }
+.hero-countdown .num { font-family: var(--serif); font-size: clamp(34px, 5.2vw, 60px); font-weight: 500; font-variant-numeric: tabular-nums; line-height: 1; text-shadow: 0 2px 14px rgba(0,0,0,0.6); }
+.hero-countdown .lab { margin-top: 6px; font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: rgba(243,239,230,0.72); }
+.hero-cd-note { margin-top: 16px; font-size: 12.5px; letter-spacing: 0.01em; color: rgba(243,239,230,0.8); text-shadow: 0 1px 6px rgba(0,0,0,0.85); }
 
 /* ---------- Stats ---------- */
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; }

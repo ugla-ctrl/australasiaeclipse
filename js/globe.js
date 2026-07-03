@@ -122,7 +122,7 @@ function init() {
   dom.addEventListener('pointerdown', e => { dragging = true; px = e.clientX; py = e.clientY; vx = vy = 0; dom.style.cursor = 'grabbing'; dom.setPointerCapture(e.pointerId); });
   dom.addEventListener('pointermove', e => {
     if (dragging) {
-      vx = (e.clientX - px) * 0.005; vy = (e.clientY - py) * 0.005;
+      vx = (e.clientX - px) * 0.0032; vy = (e.clientY - py) * 0.0032; // lower drag gain — less twitchy
       rotY += vx; rotX += vy;
       px = e.clientX; py = e.clientY; idle = 0;
     } else {
@@ -148,7 +148,7 @@ function init() {
   });
   dom.addEventListener('wheel', e => {
     e.preventDefault();
-    dist = Math.max(1.45, Math.min(5, dist + e.deltaY * 0.0016));
+    dist = Math.max(1.45, Math.min(5, dist + e.deltaY * 0.0011)); // gentler zoom
     idle = 0;
   }, { passive: false });
 
@@ -220,7 +220,7 @@ function loop(t) {
   const dt = Math.min((t - lastT) / 1000, 0.05); lastT = t;
   if (!dragging) {
     rotY += vx; rotX += vy;
-    vx *= 0.94; vy *= 0.94;
+    vx *= 0.90; vy *= 0.90; // quicker settle — less floaty spin after release
     idle += dt;
     if (idle > 3 && !umbraActive) rotY += dt * 0.05; // gentle auto-rotate when idle (paused during the shadow run)
   }

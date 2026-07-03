@@ -28,28 +28,25 @@
 <div id="bgshade" aria-hidden="true"></div>
 
 <header class="topbar">
-  <a class="wordmark" href="#top">
-    <svg class="eclipse-mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+  <a class="wordmark" href="#top" aria-label="Australasia Eclipse 2028 — home">
+    <svg class="eclipse-mark" viewBox="0 0 48 48" width="26" height="26" aria-hidden="true">
       <defs><radialGradient id="coronaGrad" cx="50%" cy="50%" r="50%">
-        <stop offset="40%" stop-color="#000000"/>
-        <stop offset="45%" stop-color="#fff3d4"/>
-        <stop offset="53%" stop-color="#ffce6a" stop-opacity="0.85"/>
+        <stop offset="42%" stop-color="#000000"/>
+        <stop offset="46%" stop-color="#fff3d4"/>
+        <stop offset="52%" stop-color="#ffce6a" stop-opacity="0.9"/>
         <stop offset="100%" stop-color="#ffce6a" stop-opacity="0"/>
       </radialGradient></defs>
-      <circle class="corona" cx="12" cy="12" r="11.5" fill="url(#coronaGrad)"/>
-      <circle cx="12" cy="12" r="5.2" fill="#0b0c11"/>
+      <circle class="corona" cx="24" cy="24" r="22" fill="url(#coronaGrad)"/>
+      <circle cx="24" cy="24" r="10.2" fill="#07080c"/>
+      <circle class="diamond" cx="33.4" cy="15.6" r="2.4" fill="#fff6de"/>
     </svg>
-    <span class="wm-text">AUSTRALASIA ECLIPSE 2028<span class="dot">.</span></span>
+    <span class="wm-text">AUSTRALASIA ECLIPSE 2028</span>
   </a>
-  <button class="nav-toggle" aria-label="Menu">☰</button>
-  <nav class="mainnav">
-    <a href="#top">Home</a>
-    <a href="#hub">The Path</a>
-    <a href="#guides">Guides</a>
-    <a href="#blog">Blog</a>
-    <a href="#faq">FAQ</a>
-    <a href="#contact" class="cta-pill">Get Updates</a>
-  </nav>
+  <form class="header-signup" id="headerSignup" novalidate>
+    <input type="email" id="hEmail" placeholder="Get updates — your email" autocomplete="email" aria-label="Email for eclipse updates">
+    <button type="submit">Sign up</button>
+    <span class="header-note" id="headerNote" role="status"></span>
+  </form>
 </header>
 
 <!-- ============ HERO ============ -->
@@ -58,38 +55,19 @@
     <div class="kicker">22 July 2028 · Australia &amp; New Zealand</div>
     <h1>Australasia Eclipse 2028</h1>
     <p class="sub">The Moon’s shadow crosses a continent and an ocean in a single afternoon. Find your place inside the path of totality.</p>
+    <div class="hero-countdown" id="countdown">
+      <div class="count-cell"><div class="num" id="cd-d">—</div><div class="lab">Days</div></div>
+      <div class="count-cell"><div class="num" id="cd-h">—</div><div class="lab">Hours</div></div>
+      <div class="count-cell"><div class="num" id="cd-m">—</div><div class="lab">Minutes</div></div>
+      <div class="count-cell"><div class="num" id="cd-s">—</div><div class="lab">Seconds</div></div>
+    </div>
+    <p class="hero-cd-note">until greatest eclipse over the Kimberley — 22 July 2028, 10:55&nbsp;am AWST</p>
     <div class="hero-ctas">
       <a class="btn btn-primary" href="#hub">Explore the path</a>
-      <a class="btn btn-ghost" href="#contact">Get updates</a>
     </div>
   </div>
   <div class="bg-caption" id="bgCaption"></div>
-  <a class="scroll-hint" href="#countdown">Scroll</a>
-</section>
-
-<!-- ============ COUNTDOWN ============ -->
-<section class="countdown-wrap section tight" id="countdown">
-  <div class="eyebrow">Countdown to totality</div>
-  <div class="countdown">
-    <div class="count-cell"><div class="num" id="cd-d">—</div><div class="lab">Days</div></div>
-    <div class="count-cell"><div class="num" id="cd-h">—</div><div class="lab">Hours</div></div>
-    <div class="count-cell"><div class="num" id="cd-m">—</div><div class="lab">Minutes</div></div>
-    <div class="count-cell"><div class="num" id="cd-s">—</div><div class="lab">Seconds</div></div>
-  </div>
-  <p class="lede" style="margin: 22px auto 0;">until the Moon’s shadow reaches greatest eclipse over the Kimberley — 22 July 2028, 10:55 am AWST.</p>
-</section>
-
-<!-- ============ THE EVENT ============ -->
-<section class="section" id="event">
-  <div class="eyebrow gold">The event</div>
-  <h2 class="section-title">One shadow. Two countries.<br>Five minutes of night at noon.</h2>
-  <p class="lede">On 22 July 2028 the Moon’s umbra makes landfall on the Kimberley coast, crosses the Australian continent through the Red Centre and the heart of Sydney, then sweeps the South Island of New Zealand — all in under three hours.</p>
-  <div class="stats" style="margin-top: 44px;">
-    <div class="stat"><div class="big">5m 10s</div><div class="cap">maximum totality, near the Kimberley — one of the longest this century</div></div>
-    <div class="stat"><div class="big">230 km</div><div class="cap">width of the Moon’s shadow at greatest eclipse</div></div>
-    <div class="stat"><div class="big">1857</div><div class="cap">the last time totality crossed Sydney — 171 years before this one</div></div>
-    <div class="stat"><div class="big">3m 48s</div><div class="cap">of darkness over Sydney Harbour at 2:01 pm</div></div>
-  </div>
+  <a class="scroll-hint" href="#hub">Scroll</a>
 </section>
 
 <!-- ============ HUB / MAP ============ -->
@@ -112,8 +90,8 @@
 
       <div class="map-controls">
         <div class="seg" id="segView">
-          <button data-v="2d" class="on">2D</button>
-          <button data-v="3d">3D</button>
+          <button data-v="2d">2D</button>
+          <button data-v="3d" class="on">3D</button>
         </div>
         <div class="seg" id="segLight">
           <button data-l="day" class="cool">DAY</button>
@@ -143,6 +121,19 @@
       </div>
       <div id="spotView" style="display:none;"></div>
     </aside>
+  </div>
+</section>
+
+<!-- ============ THE EVENT ============ -->
+<section class="section" id="event">
+  <div class="eyebrow gold">The event</div>
+  <h2 class="section-title">One shadow. Two countries.<br>Five minutes of night at noon.</h2>
+  <p class="lede">On 22 July 2028 the Moon’s umbra makes landfall on the Kimberley coast, crosses the Australian continent through the Red Centre and the heart of Sydney, then sweeps the South Island of New Zealand — all in under three hours.</p>
+  <div class="stats" style="margin-top: 44px;">
+    <div class="stat"><div class="big">5m 10s</div><div class="cap">maximum totality, near the Kimberley — one of the longest this century</div></div>
+    <div class="stat"><div class="big">230 km</div><div class="cap">width of the Moon’s shadow at greatest eclipse</div></div>
+    <div class="stat"><div class="big">1857</div><div class="cap">the last time totality crossed Sydney — 171 years before this one</div></div>
+    <div class="stat"><div class="big">3m 48s</div><div class="cap">of darkness over Sydney Harbour at 2:01 pm</div></div>
   </div>
 </section>
 
@@ -227,26 +218,24 @@
 
 <div class="divider"></div>
 
-<!-- ============ CONTACT ============ -->
+<!-- ============ GET IN TOUCH ============ -->
 <section class="section" id="contact">
-  <div class="eyebrow" style="text-align:center;">Stay in the loop</div>
-  <h2 class="section-title" style="text-align:center;">Get updates</h2>
-  <p class="lede" style="margin: 0 auto 34px; text-align:center;">Sign up for chase planning, weather calls and community stories as 22 July 2028 approaches.</p>
+  <div class="eyebrow" style="text-align:center;">Get in touch</div>
+  <h2 class="section-title" style="text-align:center;">Reach out</h2>
+  <p class="lede" style="margin: 0 auto 34px; text-align:center;">Questions about the path, planning a group trip, press or partnerships? Send a message and we’ll get back to you. Just want event updates? <a href="#top">Sign up at the top ↑</a></p>
   <form class="contact-box" id="contactForm" novalidate>
     <div class="field"><input type="text" id="cName" placeholder="Name" autocomplete="name"></div>
     <div class="field"><input type="email" id="cEmail" placeholder="Email*" required autocomplete="email"></div>
-    <div class="field"><textarea id="cMsg" placeholder="Message (optional)"></textarea></div>
-    <label class="check-row"><input type="checkbox" id="cList" checked><span>Sign up for our email list for updates, promotions, and more.</span></label>
-    <button class="send-btn" type="submit">Send</button>
+    <div class="field"><textarea id="cMsg" placeholder="Your message" required></textarea></div>
+    <button class="send-btn" type="submit">Send message</button>
     <p class="form-note" id="formNote"></p>
   </form>
 </section>
 
 <footer>
-  <div>Copyright © 2026 Australasia Eclipse 2028 — All Rights Reserved.</div>
   <div class="powered">Powered by <a href="https://imxp.org" target="_blank" rel="noopener" aria-label="IMXP — Immersive Experiences"><img class="imxp-logo" src="assets/imxp-monogram-white.png" alt="IMXP"></a></div>
-  <div class="fine">Eclipse times are calculated for each location and accurate to within a few seconds — always confirm locally before travelling.</div>
-  <div class="fine">Location photography via <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a>: Sydney © Peter Neaum (CC BY 3.0); Milford Sound, Szilas (public domain); Devils Marbles © Warren Poole (CC BY-SA 4.0); Blue Mountains © Dietmar Rabich (CC BY-SA 4.0); Queenstown © Σ64 (CC BY 4.0); Bungle Bungles © Emily Cox (CC BY-SA 4.0).</div>
+  <div>© 2026 Australasia Eclipse 2028</div>
+  <div class="fine">Eclipse times are computed per location and accurate to within a few seconds — confirm locally before travelling. Landscape photography via <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a> (CC BY / CC BY-SA).</div>
 </footer>
 
 <!-- ============ ARTICLE MODALS ============ -->
@@ -381,33 +370,37 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
   var q = item.querySelector('.faq-q'), a = item.querySelector('.faq-a');
   q.addEventListener('click', function () { var open = item.classList.toggle('open'); a.style.maxHeight = open ? a.scrollHeight + 'px' : 0; });
 });
-/* Contact (static scaffold — wire FORM_ENDPOINT before launch) */
+/* Get-in-touch message form + header email signup (static scaffold — wire FORM_ENDPOINT before launch) */
 (function () {
-  var FORM_ENDPOINT = '';
+  var FORM_ENDPOINT = ''; // TODO: connect to a real backend before launch
+  function validEmail(v) { return v && v.indexOf('@') > 0 && v.lastIndexOf('.') > v.indexOf('@'); }
+
   var form = document.getElementById('contactForm');
-  form.addEventListener('submit', function (e) {
+  if (form) form.addEventListener('submit', function (e) {
     e.preventDefault();
-    var email = document.getElementById('cEmail'), note = document.getElementById('formNote');
-    if (!email.value || email.value.indexOf('@') < 1) { note.textContent = 'Please enter a valid email address.'; note.style.color = 'var(--accent)'; return; }
-    function done() { form.reset(); note.textContent = 'Thanks — you’re on the list. See you in the shadow.'; note.style.color = 'var(--gold)'; }
+    var email = document.getElementById('cEmail'), msg = document.getElementById('cMsg'), note = document.getElementById('formNote');
+    if (!validEmail(email.value)) { note.textContent = 'Please enter a valid email address.'; note.style.color = 'var(--accent)'; return; }
+    if (!msg.value.trim()) { note.textContent = 'Add a short message so we know how to help.'; note.style.color = 'var(--accent)'; return; }
+    function done() { form.reset(); note.textContent = 'Thanks — your message is on its way. We’ll be in touch.'; note.style.color = 'var(--gold)'; }
     if (FORM_ENDPOINT) {
       fetch(FORM_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: document.getElementById('cName').value, email: email.value, message: document.getElementById('cMsg').value, list: document.getElementById('cList').checked }) })
+        body: JSON.stringify({ type: 'message', name: document.getElementById('cName').value, email: email.value, message: msg.value }) })
         .then(done).catch(done);
     } else { done(); }
   });
-})();
-/* Active nav highlight on scroll */
-(function () {
-  var links = [...document.querySelectorAll('nav.mainnav a')];
-  var map = {}; links.forEach(function (l) { var id = l.getAttribute('href').slice(1); if (id) map[id] = l; });
-  var ids = Object.keys(map);
-  var obs = new IntersectionObserver(function (entries) {
-    entries.forEach(function (en) {
-      if (en.isIntersecting) { links.forEach(function (l) { l.classList.remove('active'); }); if (map[en.target.id]) map[en.target.id].classList.add('active'); }
-    });
-  }, { rootMargin: '-45% 0px -50% 0px' });
-  ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+
+  var hForm = document.getElementById('headerSignup');
+  if (hForm) hForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = document.getElementById('hEmail'), note = document.getElementById('headerNote');
+    if (!validEmail(email.value)) { note.textContent = 'Enter a valid email'; note.style.color = 'var(--accent)'; return; }
+    function done() { email.value = ''; note.textContent = '✓ You’re on the list'; note.style.color = 'var(--gold)'; }
+    if (FORM_ENDPOINT) {
+      fetch(FORM_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'signup', email: email.value }) })
+        .then(done).catch(done);
+    } else { done(); }
+  });
 })();
 </script>
 </body>
