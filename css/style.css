@@ -27,16 +27,19 @@ body {
 #bgshow { position: fixed; inset: 0; z-index: -2; background: var(--bg); overflow: hidden; }
 #bgshow .bgslide {
   position: absolute; inset: 0; background-size: cover; background-position: center;
-  opacity: 0; transform: scale(1.12);
+  opacity: 0; transform: scale(1.03);
   transition: opacity 2.4s ease-in-out, transform 2.6s ease-out;
   will-change: opacity, transform; backface-visibility: hidden;
 }
-/* The base transform is the ZOOMED-IN end state. While a slide is shown, kenburns
-   drives it from 1.03 -> 1.12; when .on is removed the animation drops and the
-   transform transitions the last bit toward 1.12 — same direction, so the outgoing
-   slide never snaps back to the start of the zoom (the old jitter/flicker bug). */
-#bgshow .bgslide.on { opacity: 1; animation: kenburns 11s ease-out forwards; }
-@keyframes kenburns { from { transform: scale(1.03); } to { transform: scale(1.12); } }
+/* Idle slides sit at the ZOOM START (1.03), so the active slide's kenburns
+   animation begins exactly where the slide was already sitting — no backward
+   snap/pop as it fades in (this was the "resets to the start of the zoom" bug).
+   The outgoing slide gets .leaving: it fades out while continuing toward the END
+   scale (1.13), i.e. the SAME zoom direction, so it never reverses or flickers.
+   JS drops .leaving after the fade, returning it to the idle start invisibly. */
+#bgshow .bgslide.on { opacity: 1; animation: kenburns 13s ease-out forwards; }
+#bgshow .bgslide.leaving { opacity: 0; transform: scale(1.13); }
+@keyframes kenburns { from { transform: scale(1.03); } to { transform: scale(1.13); } }
 #bgshade {
   position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background:
@@ -56,6 +59,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   #bgshow .bgslide { transition: opacity 1.2s ease-in-out; }
   #bgshow .bgslide.on { animation: none; transform: scale(1.06); }
+  #bgshow .bgslide.leaving { transform: scale(1.06); }
 }
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; display: block; }

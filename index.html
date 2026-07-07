@@ -347,11 +347,17 @@
   preload(1);
   function advance() {
     if (document.hidden) return;
-    slides[i].classList.remove('on');
+    var prev = i;
+    slides[prev].classList.remove('on');
+    slides[prev].classList.add('leaving'); // fade out while still zooming in (no reverse)
     i = (i + 1) % slides.length;
+    slides[i].classList.remove('leaving');
     slides[i].classList.add('on');
     setCaption(i);
     preload((i + 1) % slides.length);
+    // Once the crossfade is done, return the old slide to the idle start-scale
+    // invisibly so it's never seen snapping back.
+    (function (p) { setTimeout(function () { slides[p].classList.remove('leaving'); }, 2600); })(prev);
   }
   setInterval(advance, HOLD);
 })();
