@@ -379,10 +379,24 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
   var q = item.querySelector('.faq-q'), a = item.querySelector('.faq-a');
   q.addEventListener('click', function () { var open = item.classList.toggle('open'); a.style.maxHeight = open ? a.scrollHeight + 'px' : 0; });
 });
-/* Get-in-touch message form + header email signup (static scaffold — wire FORM_ENDPOINT before launch) */
+/* Get-in-touch message form + hero email signup -> Supabase (australasia-eclipse-2028) */
 (function () {
-  var FORM_ENDPOINT = ''; // TODO: connect to a real backend before launch
+  var SB_URL = 'https://qmxhsendoepqeyeolzil.supabase.co/rest/v1/';
+  var SB_KEY = 'sb_publishable_qU4HH0buJWQW3_RJk3QlYg_5r84ZfdP'; // publishable key: insert-only, safe in client
   function validEmail(v) { return v && v.indexOf('@') > 0 && v.lastIndexOf('.') > v.indexOf('@'); }
+  // POST a row to a Supabase table (plain insert; RLS allows insert only).
+  function saveTo(table, row) {
+    return fetch(SB_URL + table, {
+      method: 'POST',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(Object.assign({ referrer: document.referrer, user_agent: navigator.userAgent }, row))
+    });
+  }
 
   var form = document.getElementById('contactForm');
   if (form) form.addEventListener('submit', function (e) {
@@ -391,11 +405,9 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
     if (!validEmail(email.value)) { note.textContent = 'Please enter a valid email address.'; note.style.color = 'var(--accent)'; return; }
     if (!msg.value.trim()) { note.textContent = 'Add a short message so we know how to help.'; note.style.color = 'var(--accent)'; return; }
     function done() { form.reset(); note.textContent = 'Thanks — your message is on its way. We’ll be in touch.'; note.style.color = 'var(--gold)'; }
-    if (FORM_ENDPOINT) {
-      fetch(FORM_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'message', name: document.getElementById('cName').value, email: email.value, message: msg.value }) })
-        .then(done).catch(done);
-    } else { done(); }
+    function fail() { note.textContent = 'Sorry — that didn’t send. Please try again in a moment.'; note.style.color = 'var(--accent)'; }
+    saveTo('messages', { name: document.getElementById('cName').value, email: email.value, message: msg.value })
+      .then(function (r) { r.ok ? done() : fail(); }).catch(fail);
   });
 
   // Hero "Get updates" CTA -> morph the button into an inline email field
@@ -413,11 +425,10 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
     var email = document.getElementById('heroEmail'), note = document.getElementById('heroSignupNote');
     if (!validEmail(email.value)) { note.textContent = 'Enter a valid email'; note.style.color = 'var(--accent)'; return; }
     function done() { email.value = ''; note.textContent = '✓ You’re on the list — see you in the shadow.'; note.style.color = 'var(--gold)'; }
-    if (FORM_ENDPOINT) {
-      fetch(FORM_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'signup', email: email.value }) })
-        .then(done).catch(done);
-    } else { done(); }
+    function fail() { note.textContent = 'Hmm, that didn’t save — try again'; note.style.color = 'var(--accent)'; }
+    // 409 = email already on the list; treat as success (they're subscribed).
+    saveTo('email_signups', { email: email.value, source: 'get-updates' })
+      .then(function (r) { (r.ok || r.status === 409) ? done() : fail(); }).catch(fail);
   });
 })();
 </script>
