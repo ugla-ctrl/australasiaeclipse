@@ -42,11 +42,6 @@
     <img class="wm-logo" src="assets/logo-icon.png?v=2" alt="Australasia Eclipse 2028 logo" width="38" height="38">
     <span class="wm-text">AUSTRALASIA ECLIPSE 2028</span>
   </a>
-  <form class="header-signup" id="headerSignup" novalidate>
-    <input type="email" id="hEmail" placeholder="Get updates — your email" autocomplete="email" aria-label="Email for eclipse updates">
-    <button type="submit">Sign up</button>
-    <span class="header-note" id="headerNote" role="status"></span>
-  </form>
 </header>
 
 <!-- ============ HERO ============ -->
@@ -64,7 +59,16 @@
     <p class="hero-cd-note">until greatest eclipse over the Kimberley — 22 July 2028, 10:55&nbsp;am AWST</p>
     <div class="hero-ctas">
       <a class="btn btn-primary" href="#hub">Explore the path</a>
-      <a class="btn btn-invert" href="#top" id="ctaSignup">Get updates</a>
+      <button type="button" class="btn btn-invert" id="ctaSignup" aria-expanded="false" aria-controls="heroSignupWrap">Get updates</button>
+    </div>
+    <div class="hero-signup-wrap" id="heroSignupWrap">
+      <div>
+        <form class="hero-signup" id="heroSignup" novalidate>
+          <input type="email" id="heroEmail" placeholder="Your email" autocomplete="email" aria-label="Email for eclipse updates">
+          <button type="submit">Notify me</button>
+        </form>
+        <p class="hero-signup-note" id="heroSignupNote" role="status"></p>
+      </div>
     </div>
   </div>
   <div class="bg-caption" id="bgCaption"></div>
@@ -390,22 +394,21 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
     } else { done(); }
   });
 
-  // Hero "Get updates" CTA -> focus the (sticky) header signup input
+  // Hero "Get updates" CTA -> reveal an inline email field right there
   var cta = document.getElementById('ctaSignup');
-  if (cta) cta.addEventListener('click', function (e) {
-    e.preventDefault();
-    var inp = document.getElementById('hEmail'), box = document.getElementById('headerSignup');
-    if (!inp) return;
-    inp.focus({ preventScroll: true });
-    if (box) { box.classList.add('pulse'); setTimeout(function () { box.classList.remove('pulse'); }, 1600); }
+  var wrap = document.getElementById('heroSignupWrap');
+  if (cta && wrap) cta.addEventListener('click', function () {
+    var open = wrap.classList.toggle('open');
+    cta.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) { var inp = document.getElementById('heroEmail'); if (inp) setTimeout(function () { inp.focus(); }, 220); }
   });
 
-  var hForm = document.getElementById('headerSignup');
+  var hForm = document.getElementById('heroSignup');
   if (hForm) hForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    var email = document.getElementById('hEmail'), note = document.getElementById('headerNote');
+    var email = document.getElementById('heroEmail'), note = document.getElementById('heroSignupNote');
     if (!validEmail(email.value)) { note.textContent = 'Enter a valid email'; note.style.color = 'var(--accent)'; return; }
-    function done() { email.value = ''; note.textContent = '✓ You’re on the list'; note.style.color = 'var(--gold)'; }
+    function done() { email.value = ''; note.textContent = '✓ You’re on the list — see you in the shadow.'; note.style.color = 'var(--gold)'; }
     if (FORM_ENDPOINT) {
       fetch(FORM_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'signup', email: email.value }) })
