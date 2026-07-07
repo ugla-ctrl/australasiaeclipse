@@ -59,16 +59,14 @@
     <p class="hero-cd-note">until greatest eclipse over the Kimberley — 22 July 2028, 10:55&nbsp;am AWST</p>
     <div class="hero-ctas">
       <a class="btn btn-primary" href="#hub">Explore the path</a>
-      <button type="button" class="btn btn-invert" id="ctaSignup" aria-expanded="false" aria-controls="heroSignupWrap">Get updates</button>
-    </div>
-    <div class="hero-signup-wrap" id="heroSignupWrap">
-      <div>
-        <form class="hero-signup" id="heroSignup" novalidate>
-          <input type="email" id="heroEmail" placeholder="Your email" autocomplete="email" aria-label="Email for eclipse updates">
-          <button type="submit">Notify me</button>
+      <div class="signup-slot" id="signupSlot">
+        <button type="button" class="btn btn-invert" id="ctaSignup" aria-expanded="false" aria-controls="heroSignup">Get updates</button>
+        <form class="signup-field" id="heroSignup" novalidate>
+          <input type="email" id="heroEmail" placeholder="Enter your email" autocomplete="email" aria-label="Email for eclipse updates">
+          <button type="submit" class="signup-go" aria-label="Sign up for updates">→</button>
         </form>
-        <p class="hero-signup-note" id="heroSignupNote" role="status"></p>
       </div>
+      <p class="hero-signup-note" id="heroSignupNote" role="status"></p>
     </div>
   </div>
   <div class="bg-caption" id="bgCaption"></div>
@@ -394,13 +392,13 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
     } else { done(); }
   });
 
-  // Hero "Get updates" CTA -> reveal an inline email field right there
+  // Hero "Get updates" CTA -> morph the button into an inline email field
   var cta = document.getElementById('ctaSignup');
-  var wrap = document.getElementById('heroSignupWrap');
-  if (cta && wrap) cta.addEventListener('click', function () {
-    var open = wrap.classList.toggle('open');
-    cta.setAttribute('aria-expanded', open ? 'true' : 'false');
-    if (open) { var inp = document.getElementById('heroEmail'); if (inp) setTimeout(function () { inp.focus(); }, 220); }
+  var slot = document.getElementById('signupSlot');
+  if (cta && slot) cta.addEventListener('click', function () {
+    slot.classList.add('open');
+    cta.setAttribute('aria-expanded', 'true');
+    var inp = document.getElementById('heroEmail'); if (inp) setTimeout(function () { inp.focus(); }, 120);
   });
 
   var hForm = document.getElementById('heroSignup');
