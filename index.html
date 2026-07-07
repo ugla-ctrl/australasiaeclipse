@@ -64,6 +64,7 @@
     <p class="hero-cd-note">until greatest eclipse over the Kimberley — 22 July 2028, 10:55&nbsp;am AWST</p>
     <div class="hero-ctas">
       <a class="btn btn-primary" href="#hub">Explore the path</a>
+      <a class="btn btn-invert" href="#top" id="ctaSignup">Get updates</a>
     </div>
   </div>
   <div class="bg-caption" id="bgCaption"></div>
@@ -387,6 +388,16 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
         body: JSON.stringify({ type: 'message', name: document.getElementById('cName').value, email: email.value, message: msg.value }) })
         .then(done).catch(done);
     } else { done(); }
+  });
+
+  // Hero "Get updates" CTA -> focus the (sticky) header signup input
+  var cta = document.getElementById('ctaSignup');
+  if (cta) cta.addEventListener('click', function (e) {
+    e.preventDefault();
+    var inp = document.getElementById('hEmail'), box = document.getElementById('headerSignup');
+    if (!inp) return;
+    inp.focus({ preventScroll: true });
+    if (box) { box.classList.add('pulse'); setTimeout(function () { box.classList.remove('pulse'); }, 1600); }
   });
 
   var hForm = document.getElementById('headerSignup');
