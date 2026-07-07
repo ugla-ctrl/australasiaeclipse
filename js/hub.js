@@ -39,7 +39,7 @@
     night: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 12 }),
     day: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 12 })
   };
-  tiles.night.addTo(map);
+  tiles.day.addTo(map);
   (function () {
     // Night-blue wash. It must live in its OWN Leaflet pane stacked BETWEEN the tile
     // pane (z-index 200) and the overlay/path pane (z-index 400): a plain sibling of
@@ -314,8 +314,7 @@
   // ---------- view + light toggles ----------
   var segView = document.getElementById('segView'), segLight = document.getElementById('segLight');
   var mapEl = document.getElementById('map'), globeEl = document.getElementById('globe');
-  var light = 'night';
-  mapEl.classList.add('night');
+  var light = 'day'; // default: 3D + Day
   segView.addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
     segView.querySelectorAll('button').forEach(function (x) { x.classList.remove('on'); }); b.classList.add('on');
