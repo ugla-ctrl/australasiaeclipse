@@ -213,7 +213,7 @@
       (s.desc ? '<p class="spot-desc">' + s.desc + '</p>' : '') +
       (s.weather ? '<div class="weather-note"><b>July weather</b>' + s.weather + '</div>' : '') +
       '<div class="metric wide"><div class="k">Community votes</div><div class="v">' + votesFor(s) +
-      ' <span style="font-size:12px;color:var(--muted);font-family:var(--sans)">chasers plan to watch from here</span></div></div>' +
+      ' <span style="font-size:12px;color:var(--muted);font-family:var(--sans)">Seekers plan to watch from here</span></div></div>' +
       '<button class="vote-btn" id="voteBtn">' + (localStorage.getItem('ae2028voted') === s.id ? '✓ You voted for this spot' : '♡ Vote for this spot') + '</button>';
     showSpotView();
     spotView.querySelector('.spot-close').addEventListener('click', closeSpot);
