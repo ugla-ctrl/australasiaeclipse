@@ -120,7 +120,7 @@
         <p class="side-sub" id="pollMeta">— votes cast · Click a pin, or the map, to add yours.</p>
         <button class="poll-add" id="pollAdd">+ Suggest a spot</button>
         <div id="pollList" style="margin-top:14px;"></div>
-        <p class="attrib">Every pin sits inside the path of totality. Durations &amp; times are calculated for each point and accurate to within a few seconds. Basemap © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors, © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>. Votes &amp; suggestions are saved in your browser.</p>
+        <p class="attrib">Every pin sits inside the path of totality. Durations &amp; times are calculated for each point and accurate to within a few seconds. Basemap © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors, © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>. Your vote and any spots you suggest are shared with the organisers.</p>
       </div>
       <div id="spotView" style="display:none;"></div>
     </aside>
@@ -397,6 +397,7 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
       body: JSON.stringify(Object.assign({ referrer: document.referrer, user_agent: navigator.userAgent }, row))
     });
   }
+  window.__sbInsert = saveTo; // reused by js/hub.js for votes + spot suggestions
 
   var form = document.getElementById('contactForm');
   if (form) form.addEventListener('submit', function (e) {

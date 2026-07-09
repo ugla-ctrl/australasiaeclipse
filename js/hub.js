@@ -119,6 +119,12 @@
     return (s.seed || 0) + (extra[s.id] || 0);
   }
   function totalVotes() { return SPOTS.reduce(function (a, s) { return a + votesFor(s); }, 0); }
+  // anonymous per-browser id so votes can be roughly de-duplicated server-side
+  function voterKey() {
+    var k = localStorage.getItem('ae2028voter');
+    if (!k) { k = 'v-' + Math.random().toString(36).slice(2) + '-' + Date.now().toString(36); localStorage.setItem('ae2028voter', k); }
+    return k;
+  }
   function castVote(s) {
     var extra = JSON.parse(localStorage.getItem('ae2028votes') || '{}');
     var prev = localStorage.getItem('ae2028voted');
@@ -127,6 +133,8 @@
     extra[s.id] = (extra[s.id] || 0) + 1;
     localStorage.setItem('ae2028votes', JSON.stringify(extra));
     localStorage.setItem('ae2028voted', s.id);
+    // record the vote server-side (fire-and-forget; local UI already updated)
+    if (window.__sbInsert) window.__sbInsert('votes', { spot_id: s.id, spot_name: s.name, voter_key: voterKey() }).catch(function () {});
   }
 
   // ---------- poll ----------
@@ -258,6 +266,11 @@
       saveSuggested(SPOTS.filter(function (x) { return x.suggested; }));
       addMarker(s);
       if (window.__globeAddPin) window.__globeAddPin(s); // show the new spot on the globe too
+      // submit the suggestion server-side so it actually reaches us (fire-and-forget)
+      if (window.__sbInsert) window.__sbInsert('spot_suggestions', {
+        name: name, lat: lat, lng: lng, region: region,
+        eclipse_type: c && c.type, duration: (c && c.type === 'total') ? c.duration : null
+      }).catch(function () {});
     }
     if (clickMarker) { map.removeLayer(clickMarker); clickMarker = null; }
     castVote(s);
