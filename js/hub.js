@@ -353,4 +353,19 @@
   var startGlobe = function () { window.dispatchEvent(new CustomEvent('globe:show', { detail: { light: light } })); };
   if (document.readyState === 'complete') startGlobe();
   else window.addEventListener('load', startGlobe);
+
+  // Safety net: js/globe.js imports three.js from an external CDN (unpkg). If that
+  // import is blocked (ad-blocker, corporate firewall) or the CDN is unreachable,
+  // the module never executes, #globe stays an empty div forever, and the page
+  // looks permanently "stuck loading" with no error and no 2D fallback. After a
+  // generous timeout, fall back to the 2D map if no canvas ever appeared.
+  setTimeout(function () {
+    var globeOk = window.__globeLoadFailed !== true && document.querySelector('#globe canvas');
+    if (!globeOk && globeEl.style.display !== 'none') {
+      mapEl.style.display = 'block'; globeEl.style.display = 'none';
+      map.invalidateSize();
+      var b2d = segView.querySelector('button[data-v="2d"]'), b3d = segView.querySelector('button[data-v="3d"]');
+      if (b2d && b3d) { b2d.classList.add('on'); b3d.classList.remove('on'); }
+    }
+  }, 4000);
 })();
