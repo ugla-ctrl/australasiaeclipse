@@ -498,13 +498,14 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
   var calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   function countUp(el, target) {
     target = target || 0;
-    if (calm || target <= 0) { el.textContent = target; return; }
+    if (calm || target <= 0 || document.hidden) { el.textContent = target; return; }
     var start = performance.now(), dur = 900;
     (function step(now) {
       var t = Math.min((now - start) / dur, 1), e = 1 - Math.pow(1 - t, 3);
       el.textContent = Math.round(target * e);
       if (t < 1) requestAnimationFrame(step);
     })(start);
+    setTimeout(function () { el.textContent = target; }, dur + 250); // guarantee final value even if rAF is throttled
   }
   function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : t; return d.innerHTML; }
 
