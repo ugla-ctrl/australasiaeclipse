@@ -154,6 +154,32 @@
       <p>22 July 2028 — together, in the path of totality.</p>
     </li>
   </ol>
+
+  <p class="momentum" id="momentum" aria-live="polite">
+    <span><b data-stat="seekers">0</b> seekers on board</span>
+    <span><b data-stat="votes">0</b> votes cast</span>
+    <span><b data-stat="suggestions">0</b> spots suggested</span>
+    <span><b data-stat="ideas">0</b> ideas shared</span>
+  </p>
+
+  <div class="cocreate-contribute">
+    <div class="voice">
+      <div class="eyebrow gold">Crowdsource the concept</div>
+      <h3>Add your voice</h3>
+      <p class="voice-sub">What should this gathering be? A ritual, a talk, a sound, a rule, a moment worth travelling for. The program is being written together — add yours.</p>
+      <form class="voice-form" id="ideaForm" novalidate>
+        <input type="text" id="ideaName" placeholder="First name (optional)" autocomplete="given-name" maxlength="40">
+        <textarea id="ideaText" placeholder="Your idea for the gathering…" required maxlength="600"></textarea>
+        <button type="submit" class="btn btn-primary">Share your idea</button>
+        <p class="voice-note" id="ideaNote" role="status"></p>
+      </form>
+    </div>
+    <div class="wall">
+      <div class="eyebrow gold">From the community</div>
+      <h3>What people are shaping</h3>
+      <div id="wallList" class="wall-list"></div>
+    </div>
+  </div>
 </section>
 
 <!-- ============ THE EVENT ============ -->
@@ -459,6 +485,64 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
     // 409 = email already on the list; treat as success (they're subscribed).
     saveTo('email_signups', { email: email.value, source: 'get-updates' })
       .then(function (r) { (r.ok || r.status === 409) ? done() : fail(); }).catch(fail);
+  });
+
+  // ---- Co-creation: live counts, idea submissions, moderated community wall ----
+  function sbRpc(fn) {
+    return fetch(SB_URL + 'rpc/' + fn, { method: 'POST',
+      headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' }, body: '{}' })
+      .then(function (r) { return r.json(); });
+  }
+  window.__sbRpc = sbRpc;
+
+  var calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function countUp(el, target) {
+    target = target || 0;
+    if (calm || target <= 0) { el.textContent = target; return; }
+    var start = performance.now(), dur = 900;
+    (function step(now) {
+      var t = Math.min((now - start) / dur, 1), e = 1 - Math.pow(1 - t, 3);
+      el.textContent = Math.round(target * e);
+      if (t < 1) requestAnimationFrame(step);
+    })(start);
+  }
+  function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : t; return d.innerHTML; }
+
+  sbRpc('community_stats').then(function (s) {
+    if (!s) return;
+    ['seekers', 'votes', 'suggestions', 'ideas'].forEach(function (k) {
+      var el = document.querySelector('.momentum b[data-stat="' + k + '"]');
+      if (el) countUp(el, s[k] || 0);
+    });
+    window.__spotVotes = s.spot_votes || {};
+    window.dispatchEvent(new CustomEvent('community:stats', { detail: s })); // js/hub.js wires the poll from this
+  }).catch(function () {});
+
+  (function loadWall() {
+    var list = document.getElementById('wallList');
+    if (!list) return;
+    sbRpc('community_wall').then(function (rows) {
+      if (!Array.isArray(rows) || !rows.length) {
+        list.innerHTML = '<p class="wall-empty">Be the first to shape this — new ideas and suggested spots appear here once reviewed.</p>';
+        return;
+      }
+      list.innerHTML = rows.map(function (r) {
+        var kind = r.kind === 'spot' ? 'suggested a spot' : 'shared an idea';
+        return '<div class="wall-item"><div class="wall-body">' + esc(r.body) + '</div>' +
+               '<div class="wall-by">' + esc(r.name) + ' · <span class="wall-kind">' + kind + '</span></div></div>';
+      }).join('');
+    }).catch(function () {});
+  })();
+
+  var ideaForm = document.getElementById('ideaForm');
+  if (ideaForm) ideaForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var text = document.getElementById('ideaText'), name = document.getElementById('ideaName'), note = document.getElementById('ideaNote');
+    if (!text.value.trim()) { note.textContent = 'Add a few words first.'; note.style.color = 'var(--accent)'; return; }
+    function done() { text.value = ''; name.value = ''; note.textContent = '✓ Thanks — your idea is in. It’ll appear here once reviewed.'; note.style.color = 'var(--gold)'; }
+    function fail() { note.textContent = 'Hmm, that didn’t save — try again.'; note.style.color = 'var(--accent)'; }
+    saveTo('ideas', { idea: text.value.trim(), display_name: name.value.trim() || null })
+      .then(function (r) { r.ok ? done() : fail(); }).catch(fail);
   });
 })();
 </script>

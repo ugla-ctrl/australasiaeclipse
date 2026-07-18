@@ -113,11 +113,13 @@
     renderPoll();
   });
 
-  // ---------- votes ----------
-  function votesFor(s) {
-    var extra = JSON.parse(localStorage.getItem('ae2028votes') || '{}');
-    return (s.seed || 0) + (extra[s.id] || 0);
-  }
+  // ---------- votes (real shared counts from Supabase, via community:stats) ----------
+  var SERVER_VOTES = {}; // { spot_id: count } — the live community tally
+  window.addEventListener('community:stats', function (e) {
+    SERVER_VOTES = (e.detail && e.detail.spot_votes) || {};
+    if (SPOTS.length) renderPoll();
+  });
+  function votesFor(s) { return (s.seed || 0) + (SERVER_VOTES[s.id] || 0); }
   function totalVotes() { return SPOTS.reduce(function (a, s) { return a + votesFor(s); }, 0); }
   // anonymous per-browser id so votes can be roughly de-duplicated server-side
   function voterKey() {
@@ -126,15 +128,14 @@
     return k;
   }
   function castVote(s) {
-    var extra = JSON.parse(localStorage.getItem('ae2028votes') || '{}');
     var prev = localStorage.getItem('ae2028voted');
     if (prev === s.id) return;
-    if (prev && extra[prev]) extra[prev]--;
-    extra[s.id] = (extra[s.id] || 0) + 1;
-    localStorage.setItem('ae2028votes', JSON.stringify(extra));
+    // optimistic update of the shared tally so the UI reflects it instantly
+    if (prev && SERVER_VOTES[prev]) SERVER_VOTES[prev] = Math.max(0, SERVER_VOTES[prev] - 1);
+    SERVER_VOTES[s.id] = (SERVER_VOTES[s.id] || 0) + 1;
     localStorage.setItem('ae2028voted', s.id);
-    // record the vote server-side (fire-and-forget; local UI already updated)
     if (window.__sbInsert) window.__sbInsert('votes', { spot_id: s.id, spot_name: s.name, voter_key: voterKey() }).catch(function () {});
+    renderPoll();
   }
 
   // ---------- poll ----------
