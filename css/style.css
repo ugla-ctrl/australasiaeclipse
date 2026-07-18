@@ -169,9 +169,10 @@ h1, h2, h3, .display { font-family: var(--serif); font-weight: 500; line-height:
 .stat .big { font-family: var(--serif); font-size: 38px; color: var(--gold); }
 .stat .cap { color: var(--muted); font-size: 14px; margin-top: 6px; }
 
-/* ---------- Co-creation roadmap (reuses the card + palette system) ---------- */
+/* ---------- Co-creation roadmap (dark glass band, same treatment as the map) ---------- */
+.cocreate-inner { max-width: 1120px; margin: 0 auto; padding: 96px 28px; }
 .cocreate .lede { margin-bottom: 38px; }
-.roadmap { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.roadmap { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
 .stage { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 22px 22px 24px; }
 .stage-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .stage-no { font-family: var(--serif); font-size: 22px; line-height: 1; color: var(--muted); }
