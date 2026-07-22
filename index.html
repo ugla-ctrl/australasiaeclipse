@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="css/style.css?v=17">
+<link rel="stylesheet" href="css/style.css?v=18">
 <link rel="icon" type="image/png" href="assets/logo-icon.png?v=2">
 <link rel="apple-touch-icon" href="assets/logo-icon.png?v=2">
 </head>
@@ -312,7 +312,6 @@
       <button type="submit" class="btn btn-primary">Keep me posted</button>
       <p class="cap-note" id="capNote" role="status"></p>
     </form>
-    <button type="button" class="cap-already" id="capAlready">No thanks, I'm done for now</button>
   </div>
 </div>
 
@@ -508,9 +507,6 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
   if (capBtn) capBtn.addEventListener('click', function () { openCap('get-updates'); });
   var capX = document.getElementById('capClose');
   if (capX) capX.addEventListener('click', closeCap);
-  // "I'm done" only quiets the popup for this visit; the next visit asks again.
-  var capAlready = document.getElementById('capAlready');
-  if (capAlready) capAlready.addEventListener('click', closeCap);
   if (capModal) capModal.addEventListener('click', function (e) { if (e.target === capModal) closeCap(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeCap(); });
 
