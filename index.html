@@ -526,18 +526,10 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
       .then(function (r) { (r.ok || r.status === 409) ? done() : fail(); }).catch(fail);
   });
 
-  // Auto-open once per visit: first scroll arms an 18 second timer. Only an
-  // actual signup ("ae2028member") quiets it across visits.
+  // Auto-open once per visit, right when the site loads. Only an actual signup
+  // ("ae2028member") quiets it across visits.
   if (!sessionStorage.getItem('ae2028capseen') && !localStorage.getItem('ae2028member')) {
-    var capArmed = false;
-    window.addEventListener('scroll', function armCap() {
-      if (capArmed || window.scrollY < 200) return;
-      capArmed = true;
-      window.removeEventListener('scroll', armCap);
-      setTimeout(function () {
-        if (!sessionStorage.getItem('ae2028capseen') && !localStorage.getItem('ae2028member')) openCap('auto-popup');
-      }, 18000);
-    }, { passive: true });
+    setTimeout(function () { openCap('auto-popup'); }, 400);
   }
 
   // ---- Co-creation: live counts, idea submissions, moderated community wall ----
