@@ -312,7 +312,7 @@
       <button type="submit" class="btn btn-primary">Keep me posted</button>
       <p class="cap-note" id="capNote" role="status"></p>
     </form>
-    <button type="button" class="cap-already" id="capAlready">I'm already on the list, don't ask again</button>
+    <button type="button" class="cap-already" id="capAlready">No thanks, I'm done for now</button>
   </div>
 </div>
 
@@ -508,11 +508,9 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
   if (capBtn) capBtn.addEventListener('click', function () { openCap('get-updates'); });
   var capX = document.getElementById('capClose');
   if (capX) capX.addEventListener('click', closeCap);
+  // "I'm done" only quiets the popup for this visit; the next visit asks again.
   var capAlready = document.getElementById('capAlready');
-  if (capAlready) capAlready.addEventListener('click', function () {
-    localStorage.setItem('ae2028signedup', '1');
-    closeCap();
-  });
+  if (capAlready) capAlready.addEventListener('click', closeCap);
   if (capModal) capModal.addEventListener('click', function (e) { if (e.target === capModal) closeCap(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeCap(); });
 
@@ -522,7 +520,7 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
     var name = document.getElementById('capName'), email = document.getElementById('capEmail'), note = document.getElementById('capNote');
     if (!validEmail(email.value)) { note.textContent = 'Please enter a valid email.'; note.style.color = 'var(--accent)'; return; }
     function done() {
-      localStorage.setItem('ae2028signedup', '1');
+      localStorage.setItem('ae2028member', '1');
       note.textContent = '✓ You are on the list. See you in the shadow.'; note.style.color = 'var(--gold)';
       setTimeout(closeCap, 1600);
     }
@@ -532,15 +530,16 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
       .then(function (r) { (r.ok || r.status === 409) ? done() : fail(); }).catch(fail);
   });
 
-  // Auto-open once per visit: first scroll arms an 18 second timer.
-  if (!sessionStorage.getItem('ae2028capseen') && !localStorage.getItem('ae2028signedup')) {
+  // Auto-open once per visit: first scroll arms an 18 second timer. Only an
+  // actual signup ("ae2028member") quiets it across visits.
+  if (!sessionStorage.getItem('ae2028capseen') && !localStorage.getItem('ae2028member')) {
     var capArmed = false;
     window.addEventListener('scroll', function armCap() {
       if (capArmed || window.scrollY < 200) return;
       capArmed = true;
       window.removeEventListener('scroll', armCap);
       setTimeout(function () {
-        if (!sessionStorage.getItem('ae2028capseen') && !localStorage.getItem('ae2028signedup')) openCap('auto-popup');
+        if (!sessionStorage.getItem('ae2028capseen') && !localStorage.getItem('ae2028member')) openCap('auto-popup');
       }, 18000);
     }, { passive: true });
   }
