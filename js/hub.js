@@ -168,7 +168,7 @@
 
   // ---------- side panel content ----------
   function contactRow(c, off) {
-    function t(ms) { return ms == null ? '—' : fmtShort(ms, off); }
+    function t(ms) { return ms == null ? '·' : fmtShort(ms, off); }
     var cells = c.type === 'total'
       ? [['C1', c.c1UT], ['C2', c.c2UT], ['MAX', c.maxUT], ['C3', c.c3UT], ['C4', c.c4UT]]
       : [['C1', c.c1UT], ['MAX', c.maxUT], ['C4', c.c4UT]];
@@ -199,7 +199,7 @@
     if (c.type !== 'total') {
       var n = nearestTotality(lat, lng);
       if (n) h += '<div class="nearest-hint">Outside the path here. Closest totality: <b>' + n.km + ' km ' + n.dir +
-        '</b> on the central line — <b>' + (n.dur || '—') + '</b> of darkness. <a href="#" data-goto="' + n.at[0] + ',' + n.at[1] + '" style="color:var(--corona);text-decoration:underline;">Jump there →</a></div>';
+        '</b> on the central line, <b>' + (n.dur || '·') + '</b> of darkness. <a href="#" data-goto="' + n.at[0] + ',' + n.at[1] + '" style="color:var(--corona);text-decoration:underline;">Jump there →</a></div>';
     }
     return h;
   }
@@ -348,25 +348,39 @@
   });
 
   // Default to the 3D globe (feedback: 3D should be the default view). The 3D button
-  // is pre-marked .on in the HTML; here we swap the panes and kick off the globe once
-  // its module has registered the globe:show listener (fires on window load).
+  // is pre-marked .on in the HTML; here we swap the panes. The globe itself does NOT
+  // start until the map section scrolls into view: starting it at page load meant the
+  // idle auto-rotate had already turned the Earth away from Australia by the time
+  // visitors reached the map.
   mapEl.style.display = 'none'; globeEl.style.display = 'block';
-  var startGlobe = function () { window.dispatchEvent(new CustomEvent('globe:show', { detail: { light: light } })); };
-  if (document.readyState === 'complete') startGlobe();
-  else window.addEventListener('load', startGlobe);
-
-  // Safety net: js/globe.js imports three.js from an external CDN (unpkg). If that
-  // import is blocked (ad-blocker, corporate firewall) or the CDN is unreachable,
-  // the module never executes, #globe stays an empty div forever, and the page
-  // looks permanently "stuck loading" with no error and no 2D fallback. After a
-  // generous timeout, fall back to the 2D map if no canvas ever appeared.
-  setTimeout(function () {
-    var globeOk = window.__globeLoadFailed !== true && document.querySelector('#globe canvas');
-    if (!globeOk && globeEl.style.display !== 'none') {
-      mapEl.style.display = 'block'; globeEl.style.display = 'none';
-      map.invalidateSize();
-      var b2d = segView.querySelector('button[data-v="2d"]'), b3d = segView.querySelector('button[data-v="3d"]');
-      if (b2d && b3d) { b2d.classList.add('on'); b3d.classList.remove('on'); }
-    }
-  }, 4000);
+  var globeStarted = false;
+  function startGlobe() {
+    if (globeStarted) return; globeStarted = true;
+    window.dispatchEvent(new CustomEvent('globe:show', { detail: { light: light } }));
+    // Safety net: js/globe.js imports three.js from an external CDN (unpkg). If that
+    // import is blocked (ad-blocker, corporate firewall) or the CDN is unreachable,
+    // the module never executes, #globe stays an empty div forever, and the page
+    // looks permanently "stuck loading" with no error and no 2D fallback. After a
+    // generous timeout, fall back to the 2D map if no canvas ever appeared.
+    setTimeout(function () {
+      var globeOk = window.__globeLoadFailed !== true && document.querySelector('#globe canvas');
+      if (!globeOk && globeEl.style.display !== 'none') {
+        mapEl.style.display = 'block'; globeEl.style.display = 'none';
+        map.invalidateSize();
+        var b2d = segView.querySelector('button[data-v="2d"]'), b3d = segView.querySelector('button[data-v="3d"]');
+        if (b2d && b3d) { b2d.classList.add('on'); b3d.classList.remove('on'); }
+      }
+    }, 4000);
+  }
+  function armGlobe() {
+    if (document.readyState === 'complete') startGlobe();
+    else window.addEventListener('load', startGlobe);
+  }
+  var hubSection = document.getElementById('hub');
+  if ('IntersectionObserver' in window && hubSection) {
+    var gio = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) { gio.disconnect(); armGlobe(); }
+    }, { rootMargin: '160px' });
+    gio.observe(hubSection);
+  } else { armGlobe(); }
 })();

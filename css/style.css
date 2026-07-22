@@ -212,6 +212,28 @@ h1, h2, h3, .display { font-family: var(--serif); font-weight: 500; line-height:
 .wall-item .wall-kind { color: var(--corona); }
 .wall-empty { color: var(--muted); font-size: 14px; padding: 6px 2px; }
 
+/* ---------- Signup modal (name + email) ---------- */
+.cap-modal { position: fixed; inset: 0; z-index: 2000; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(4, 5, 9, 0.66); backdrop-filter: blur(7px); }
+.cap-modal.open { display: flex; }
+.cap-box { position: relative; width: 100%; max-width: 430px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 18px; padding: 30px 28px 26px; box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55); animation: capIn 0.28s ease; }
+@keyframes capIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .cap-box { animation: none; } }
+.cap-box h3 { font-size: 26px; margin: 2px 0 8px; }
+.cap-sub { color: var(--muted); font-size: 14px; margin-bottom: 18px; }
+.cap-close { position: absolute; top: 14px; right: 16px; background: none; border: 0; color: var(--muted); font-size: 15px; cursor: pointer; padding: 6px; transition: color 0.2s; }
+.cap-close:hover { color: var(--ink); }
+#capForm { display: flex; flex-direction: column; gap: 10px; }
+#capForm input { width: 100%; background: rgba(12, 13, 18, 0.7); border: 1px solid var(--line); border-radius: 12px; color: var(--ink); font: 500 14px var(--sans); padding: 12px 14px; outline: none; transition: border-color 0.2s; }
+#capForm input:focus { border-color: var(--accent); }
+#capForm input::placeholder { color: var(--muted); }
+#capForm .btn { margin-top: 4px; }
+.cap-note { font-size: 12px; font-weight: 600; min-height: 14px; margin: 0; text-align: center; }
+
+/* ---------- Footer socials ---------- */
+.socials { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
+.soc { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); color: var(--muted); transition: color 0.2s, border-color 0.2s, transform 0.15s; }
+.soc:hover { color: var(--corona); border-color: rgba(255, 206, 106, 0.55); transform: translateY(-2px); }
+
 /* ---------- Trilogy cards ---------- */
 .trilogy { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
 .tri-card { position: relative; border-radius: 18px; overflow: hidden; border: 1px solid var(--line); background: var(--panel); padding: 30px 26px; transition: transform 0.2s, border-color 0.2s; }
