@@ -228,6 +228,8 @@ h1, h2, h3, .display { font-family: var(--serif); font-weight: 500; line-height:
 #capForm input::placeholder { color: var(--muted); }
 #capForm .btn { margin-top: 4px; }
 .cap-note { font-size: 12px; font-weight: 600; min-height: 14px; margin: 0; text-align: center; }
+.cap-already { display: block; margin: 14px auto 0; background: none; border: 0; color: var(--muted); font: 500 12px var(--sans); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; transition: color 0.2s; }
+.cap-already:hover { color: var(--ink); }
 
 /* ---------- Footer socials ---------- */
 .socials { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }

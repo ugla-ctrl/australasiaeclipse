@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="css/style.css?v=16">
+<link rel="stylesheet" href="css/style.css?v=17">
 <link rel="icon" type="image/png" href="assets/logo-icon.png?v=2">
 <link rel="apple-touch-icon" href="assets/logo-icon.png?v=2">
 </head>
@@ -312,6 +312,7 @@
       <button type="submit" class="btn btn-primary">Keep me posted</button>
       <p class="cap-note" id="capNote" role="status"></p>
     </form>
+    <button type="button" class="cap-already" id="capAlready">I'm already on the list, don't ask again</button>
   </div>
 </div>
 
@@ -485,15 +486,15 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
       .then(function (r) { r.ok ? done() : fail(); }).catch(fail);
   });
 
-  // Signup modal (name + email). Opens from the hero button, and once on its own
-  // about 18 seconds after the visitor first scrolls, unless they already signed
-  // up or have seen it before.
+  // Signup modal (name + email). Opens from the hero button, and once per visit
+  // on its own, about 18 seconds after the visitor first scrolls. Stops for good
+  // once they sign up or say they already have.
   var capModal = document.getElementById('capModal');
   var capSource = 'get-updates';
   function openCap(src) {
     if (!capModal) return;
     capSource = src || 'get-updates';
-    localStorage.setItem('ae2028capseen', '1');
+    sessionStorage.setItem('ae2028capseen', '1');
     capModal.classList.add('open');
     document.body.style.overflow = 'hidden';
     setTimeout(function () { var n = document.getElementById('capName'); if (n) n.focus(); }, 150);
@@ -507,6 +508,11 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
   if (capBtn) capBtn.addEventListener('click', function () { openCap('get-updates'); });
   var capX = document.getElementById('capClose');
   if (capX) capX.addEventListener('click', closeCap);
+  var capAlready = document.getElementById('capAlready');
+  if (capAlready) capAlready.addEventListener('click', function () {
+    localStorage.setItem('ae2028signedup', '1');
+    closeCap();
+  });
   if (capModal) capModal.addEventListener('click', function (e) { if (e.target === capModal) closeCap(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeCap(); });
 
@@ -526,15 +532,15 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
       .then(function (r) { (r.ok || r.status === 409) ? done() : fail(); }).catch(fail);
   });
 
-  // Auto-open once: first scroll arms an 18 second timer.
-  if (!localStorage.getItem('ae2028capseen') && !localStorage.getItem('ae2028signedup')) {
+  // Auto-open once per visit: first scroll arms an 18 second timer.
+  if (!sessionStorage.getItem('ae2028capseen') && !localStorage.getItem('ae2028signedup')) {
     var capArmed = false;
     window.addEventListener('scroll', function armCap() {
       if (capArmed || window.scrollY < 200) return;
       capArmed = true;
       window.removeEventListener('scroll', armCap);
       setTimeout(function () {
-        if (!localStorage.getItem('ae2028capseen') && !localStorage.getItem('ae2028signedup')) openCap('auto-popup');
+        if (!sessionStorage.getItem('ae2028capseen') && !localStorage.getItem('ae2028signedup')) openCap('auto-popup');
       }, 18000);
     }, { passive: true });
   }
