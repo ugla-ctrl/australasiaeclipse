@@ -71,8 +71,9 @@
 
   function renderStats(s) {
     var cards = [
+      ['unique_emails', 'Unique emails signed up', 'distinct people who registered, duplicates removed'],
       ['unique_voters', 'Unique voters', 'people who have cast at least one vote'],
-      ['email_signups', 'Email signups', 'people who asked to be kept posted'],
+      ['email_signups', 'Signup submissions', 'raw total, may include duplicates'],
       ['total_vote_actions', 'Vote actions', 'includes anyone who changed their vote'],
       ['ideas_pending_review', 'Ideas awaiting review', 'out of ' + s.ideas_total + ' shared total'],
       ['spot_suggestions_pending', 'Spots awaiting review', 'out of ' + s.spot_suggestions_total + ' suggested total'],
