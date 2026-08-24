@@ -43,20 +43,37 @@
       return;
     }
     var max = Math.max.apply(null, rows.map(function (r) { return r.votes; }).concat([1]));
-    listEl.innerHTML = rows.map(function (r, i) {
-      var rank = i + 1;
-      var rankCls = rank <= 3 ? ' top' + rank : '';
+    var podiumEligible = rows.length >= 3;
+    var top3 = podiumEligible ? rows.slice(0, 3) : [];
+    var rest = podiumEligible ? rows.slice(3) : rows;
+    var restRankStart = podiumEligible ? 4 : 1;
+
+    var podium = '';
+    if (top3.length === 3) {
+      podium = '<div class="lb-podium">' + top3.map(function (r, i) {
+        return (
+          '<div class="lb-p-card p' + (i + 1) + '">' +
+            '<div class="lb-p-rank">' + (i + 1) + '</div>' +
+            '<div class="lb-p-name">' + esc(r.name) + '</div>' +
+            '<div class="lb-p-votes">' + r.votes + (r.votes === 1 ? ' vote' : ' votes') + '</div>' +
+          '</div>'
+        );
+      }).join('') + '</div>';
+    }
+
+    var restHtml = rest.length ? '<div class="lb-rest">' + rest.map(function (r, i) {
+      var rank = i + restRankStart;
       return (
-        '<div class="leaderboard-row' + rankCls + '">' +
-          '<div class="lb-rank">' + rank + '</div>' +
-          '<div class="lb-main">' +
-            '<div class="lb-top"><span class="lb-name">' + esc(r.name) + '</span><span class="lb-votes">' + r.votes + '</span></div>' +
-            (r.region ? '<div class="lb-region">' + esc(r.region) + '</div>' : '') +
-            '<div class="poll-bar"><i style="width:' + (r.votes / max * 100) + '%"></i></div>' +
-          '</div>' +
+        '<div class="lb-row">' +
+          '<div class="lb-fill" style="width:' + (r.votes / max * 100) + '%"></div>' +
+          '<span class="lb-r-rank">' + rank + '</span>' +
+          '<span class="lb-r-name">' + esc(r.name) + '</span>' +
+          '<span class="lb-r-votes">' + r.votes + '</span>' +
         '</div>'
       );
-    }).join('');
+    }).join('') + '</div>' : '';
+
+    listEl.innerHTML = podium + restHtml;
   }
 
   function tick() {
