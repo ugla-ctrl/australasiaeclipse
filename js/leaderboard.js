@@ -1,14 +1,16 @@
 /* Public live leaderboard, below the interactive map.
  * Reuses the existing community_stats() RPC (already exposed as window.__sbRpc by
- * index.html) and data/spots.json for names. Entirely additive: does not touch
- * hub.js, its community:stats event, or the existing side panel poll in any way.
- * Polls on its own timer so the board updates without a page reload. */
+ * index.html). Driven entirely by the votes table via spot_votes + spot_names (both
+ * returned by that RPC), so a brand new visitor-suggested spot appears here, with
+ * its real name, the moment it gets its first vote, no static file to keep in sync.
+ * Entirely additive: does not touch hub.js, its community:stats event, or the
+ * existing side panel poll in any way. Polls on its own timer so the board updates
+ * without a page reload. */
 (function () {
   var POLL_MS = 20000;
+  var RING_SEGMENTS = 6; // top N get their own wedge; the rest fold into "other"
   var listEl = document.getElementById('leaderboardList');
   if (!listEl) return;
-
-  var SPOT_INFO = {}; // id -> { name, region }
 
   function esc(t) {
     var d = document.createElement('div');
@@ -16,75 +18,72 @@
     return d.innerHTML;
   }
 
-  function loadSpotInfo() {
-    return fetch('data/spots.json').then(function (r) { return r.json(); }).then(function (d) {
-      (d.spots || []).forEach(function (s) { SPOT_INFO[s.id] = { name: s.name, region: s.region }; });
-    }).catch(function () {});
+  // Same gold, fading opacity per rank, so the ring and the list read as one system.
+  function wedgeColor(i) {
+    var a = Math.max(0.22, 1 - i * 0.15);
+    return 'rgba(255, 206, 106, ' + a.toFixed(2) + ')';
   }
 
-  function render(spotVotes) {
-    var rows = Object.keys(spotVotes || {}).map(function (id) {
-      var info = SPOT_INFO[id];
-      return {
-        id: id,
-        name: info ? info.name : 'A suggested spot',
-        region: info ? info.region : null,
-        votes: spotVotes[id] || 0
-      };
-    });
-    // include seeded spots with zero votes so the board never looks empty or partial
-    Object.keys(SPOT_INFO).forEach(function (id) {
-      if (!spotVotes || !(id in spotVotes)) rows.push({ id: id, name: SPOT_INFO[id].name, region: SPOT_INFO[id].region, votes: 0 });
+  function render(spotVotes, spotNames) {
+    var ids = Object.keys(spotVotes || {}).filter(function (id) { return (spotVotes[id] || 0) > 0; });
+    var rows = ids.map(function (id) {
+      return { id: id, name: (spotNames && spotNames[id]) || 'A suggested spot', votes: spotVotes[id] };
     });
     rows.sort(function (a, b) { return b.votes - a.votes; });
 
-    if (!rows.length) {
+    var total = rows.reduce(function (a, r) { return a + r.votes; }, 0);
+    if (!total) {
       listEl.innerHTML = '<p class="leaderboard-loading">No votes yet. Be the first, above.</p>';
       return;
     }
-    var max = Math.max.apply(null, rows.map(function (r) { return r.votes; }).concat([1]));
-    var podiumEligible = rows.length >= 3;
-    var top3 = podiumEligible ? rows.slice(0, 3) : [];
-    var rest = podiumEligible ? rows.slice(3) : rows;
-    var restRankStart = podiumEligible ? 4 : 1;
+    rows.forEach(function (r) { r.pct = Math.round((r.votes / total) * 1000) / 10; });
 
-    var podium = '';
-    if (top3.length === 3) {
-      podium = '<div class="lb-podium">' + top3.map(function (r, i) {
-        return (
-          '<div class="lb-p-card p' + (i + 1) + '">' +
-            '<div class="lb-p-rank">' + (i + 1) + '</div>' +
-            '<div class="lb-p-name">' + esc(r.name) + '</div>' +
-            '<div class="lb-p-votes">' + r.votes + (r.votes === 1 ? ' vote' : ' votes') + '</div>' +
-          '</div>'
-        );
-      }).join('') + '</div>';
-    }
+    // ---- the ring: top N wedges + one "other" wedge for the tail ----
+    var top = rows.slice(0, RING_SEGMENTS);
+    var otherPct = rows.slice(RING_SEGMENTS).reduce(function (a, r) { return a + r.pct; }, 0);
+    var stops = [], cum = 0;
+    top.forEach(function (r, i) {
+      var start = cum, end = cum + r.pct;
+      stops.push(wedgeColor(i) + ' ' + start + '% ' + end + '%');
+      cum = end;
+    });
+    if (otherPct > 0) stops.push('rgba(164, 158, 146, 0.32) ' + cum + '% ' + (cum + otherPct) + '%');
+    cum += otherPct;
+    if (cum < 100) stops.push('rgba(255,255,255,0) ' + cum + '% 100%');
+    var gradient = 'conic-gradient(from -90deg, ' + stops.join(', ') + ')';
 
-    var restHtml = rest.length ? '<div class="lb-rest">' + rest.map(function (r, i) {
-      var rank = i + restRankStart;
-      return (
-        '<div class="lb-row">' +
-          '<div class="lb-fill" style="width:' + (r.votes / max * 100) + '%"></div>' +
-          '<span class="lb-r-rank">' + rank + '</span>' +
-          '<span class="lb-r-name">' + esc(r.name) + '</span>' +
-          '<span class="lb-r-votes">' + r.votes + '</span>' +
-        '</div>'
-      );
-    }).join('') + '</div>' : '';
+    var leader = rows[0];
+    var corona =
+      '<div class="lb-corona-wrap">' +
+        '<div class="lb-corona" style="background:' + gradient + '">' +
+          '<div class="lb-corona-center">' +
+            '<div class="cc-pct">' + leader.pct + '%</div>' +
+            '<div class="cc-name">' + esc(leader.name) + '</div>' +
+            '<div class="cc-label">in the lead</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="lb-rest">' + rows.map(function (r, i) {
+          return (
+            '<div class="lb-row">' +
+              '<div class="lb-fill" style="width:' + (r.votes / rows[0].votes * 100) + '%"></div>' +
+              '<span class="lb-r-rank" style="color:' + wedgeColor(Math.min(i, RING_SEGMENTS)) + '">' + (i + 1) + '</span>' +
+              '<span class="lb-r-name">' + esc(r.name) + '</span>' +
+              '<span class="lb-r-pct">' + r.pct + '%</span>' +
+            '</div>'
+          );
+        }).join('') + '</div>' +
+      '</div>';
 
-    listEl.innerHTML = podium + restHtml;
+    listEl.innerHTML = corona;
   }
 
   function tick() {
     if (!window.__sbRpc) return; // index.html's inline script hasn't finished defining it yet; the next tick will catch it
     window.__sbRpc('community_stats').then(function (s) {
-      render(s && s.spot_votes);
+      render(s && s.spot_votes, s && s.spot_names);
     }).catch(function () {});
   }
 
-  loadSpotInfo().then(function () {
-    tick();
-    setInterval(tick, POLL_MS);
-  });
+  tick();
+  setInterval(tick, POLL_MS);
 })();

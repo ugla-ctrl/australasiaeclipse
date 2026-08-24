@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Australasia Eclipse, Stats</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=21">
+<link rel="icon" type="image/png" href="assets/logo-icon.png?v=2">
+<style>
+  body { background: var(--bg); }
+  .admin-wrap { max-width: 880px; margin: 0 auto; padding: 64px 28px 100px; }
+  .gate { max-width: 380px; margin: 18vh auto; text-align: center; }
+  .gate input { width: 100%; background: rgba(12, 13, 18, 0.7); border: 1px solid var(--line); border-radius: 999px; color: var(--ink); font: 500 15px var(--sans); padding: 13px 20px; outline: none; text-align: center; margin: 18px 0 10px; }
+  .gate input:focus { border-color: var(--accent); }
+  .gate .err { color: var(--accent); font-size: 13px; min-height: 16px; }
+  .admin-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+  .admin-table th { text-align: left; color: var(--muted); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  .admin-table td { padding: 9px 10px; border-bottom: 1px solid var(--line); color: var(--ink); }
+  .admin-table td.num, .admin-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .admin-table tr:first-child td { color: var(--gold); font-weight: 600; }
+  .admin-note { color: var(--muted); font-size: 12px; margin-top: 22px; }
+</style>
+</head>
+<body>
+
+<div class="admin-wrap">
+  <div class="gate" id="gate">
+    <div class="eyebrow gold">Australasia Eclipse</div>
+    <h1 class="section-title" style="font-size: 30px;">Stats, for organisers</h1>
+    <form id="gateForm">
+      <input type="text" id="gateUid" placeholder="Username" autocomplete="off">
+      <input type="password" id="gatePass" placeholder="Password" autocomplete="off">
+      <button type="submit" class="btn btn-primary" style="width:100%; margin-top: 6px;">Unlock</button>
+      <p class="err" id="gateErr"></p>
+    </form>
+  </div>
+
+  <div id="dash" style="display:none;">
+    <div class="eyebrow gold">Australasia Eclipse, private</div>
+    <h1 class="section-title" style="font-size: 34px; margin-bottom: 8px;">Where things stand</h1>
+    <p class="lede" style="margin-bottom: 34px;">Not a precise attendee count, these are two independent signals of interest. Use judgement combining them.</p>
+
+    <div class="stats" id="statCards"></div>
+
+    <h2 class="section-title" style="font-size: 22px; margin-top: 48px;">Every spot, by votes</h2>
+    <table class="admin-table" id="spotTable">
+      <thead><tr><th>Spot</th><th class="num">Votes</th><th class="num">Share</th></tr></thead>
+      <tbody></tbody>
+    </table>
+
+    <p class="admin-note">This page is not linked anywhere on the public site and the numbers above require the passcode to load, checked by the database itself, not just by this page. Nothing personal (no names or emails) is shown here.</p>
+  </div>
+</div>
+
+<script>
+(function () {
+  var SB_URL = 'https://qmxhsendoepqeyeolzil.supabase.co/rest/v1/';
+  var SB_KEY = 'sb_publishable_qU4HH0buJWQW3_RJk3QlYg_5r84ZfdP';
+
+  function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : t; return d.innerHTML; }
+
+  function fetchStats(uid, pw) {
+    return fetch(SB_URL + 'rpc/admin_stats', {
+      method: 'POST',
+      headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uid: uid, pw: pw })
+    }).then(function (r) { if (!r.ok) throw new Error('unauthorized'); return r.json(); });
+  }
+
+  function renderStats(s) {
+    var cards = [
+      ['unique_voters', 'Unique voters', 'people who have cast at least one vote'],
+      ['email_signups', 'Email signups', 'people who asked to be kept posted'],
+      ['total_vote_actions', 'Vote actions', 'includes anyone who changed their vote'],
+      ['ideas_pending_review', 'Ideas awaiting review', 'out of ' + s.ideas_total + ' shared total'],
+      ['spot_suggestions_pending', 'Spots awaiting review', 'out of ' + s.spot_suggestions_total + ' suggested total'],
+      ['contact_messages', 'Get in touch messages', 'sent through the contact form']
+    ];
+    document.getElementById('statCards').innerHTML = cards.map(function (c) {
+      return '<div class="stat"><div class="big">' + (s[c[0]] != null ? s[c[0]] : '0') + '</div><div class="cap">' + esc(c[1]) + '<br>' + esc(c[2]) + '</div></div>';
+    }).join('');
+
+    var tbody = document.querySelector('#spotTable tbody');
+    tbody.innerHTML = (s.spot_breakdown || []).map(function (r) {
+      return '<tr><td>' + esc(r.name || r.spot_id) + '</td><td class="num">' + r.votes + '</td><td class="num">' + r.pct + '%</td></tr>';
+    }).join('');
+  }
+
+  document.getElementById('gateForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var uid = document.getElementById('gateUid').value, pw = document.getElementById('gatePass').value;
+    var err = document.getElementById('gateErr');
+    err.textContent = '';
+    fetchStats(uid, pw).then(function (s) {
+      sessionStorage.setItem('ae2028adminuid', uid); // this tab only, cleared when the tab closes
+      sessionStorage.setItem('ae2028adminpw', pw);
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('dash').style.display = 'block';
+      renderStats(s);
+    }).catch(function () {
+      err.textContent = 'Wrong username or password.';
+    });
+  });
+
+  // If this tab already unlocked once this session, skip the gate.
+  var savedUid = sessionStorage.getItem('ae2028adminuid'), savedPw = sessionStorage.getItem('ae2028adminpw');
+  if (savedUid && savedPw) {
+    fetchStats(savedUid, savedPw).then(function (s) {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('dash').style.display = 'block';
+      renderStats(s);
+    }).catch(function () { sessionStorage.removeItem('ae2028adminuid'); sessionStorage.removeItem('ae2028adminpw'); });
+  }
+})();
+</script>
+</body>
+</html>
