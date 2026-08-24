@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="css/style.css?v=18">
+<link rel="stylesheet" href="css/style.css?v=19">
 <link rel="icon" type="image/png" href="assets/logo-icon.png?v=2">
 <link rel="apple-touch-icon" href="assets/logo-icon.png?v=2">
 </head>
@@ -117,6 +117,18 @@
       </div>
       <div id="spotView" style="display:none;"></div>
     </aside>
+  </div>
+</section>
+
+<!-- ============ LIVE LEADERBOARD ============ -->
+<section class="hub-section leaderboard-section" id="leaderboard">
+  <div class="hub-head">
+    <div class="eyebrow gold"><span class="live-dot" aria-hidden="true"></span>Live, updates on its own</div>
+    <h2 class="section-title">The leaderboard</h2>
+    <p class="lede">Every vote from the map above, ranked. This board refreshes itself, no need to reload the page.</p>
+  </div>
+  <div class="leaderboard-list" id="leaderboardList">
+    <p class="leaderboard-loading">Loading the current standings.</p>
   </div>
 </section>
 
@@ -603,5 +615,6 @@ document.querySelectorAll('.faq-item').forEach(function (item) {
   });
 })();
 </script>
+<script src="js/leaderboard.js"></script>
 </body>
 </html>
