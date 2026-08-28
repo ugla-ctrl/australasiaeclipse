@@ -359,7 +359,7 @@ h1, h2, h3, .display { font-family: var(--serif); font-weight: 500; line-height:
 .article-close:hover { color: var(--ink); border-color: var(--ink); }
 .article-body { padding: 34px 40px 46px; }
 .article-body img.cover { border-radius: 14px; margin-bottom: 26px; }
-.article-body h1 { font-size: clamp(30px, 4vw, 42px); margin-bottom: 8px; }
+.article-body h1, .article-body .article-title { font-size: clamp(30px, 4vw, 42px); margin: 0 0 8px; }
 .article-body .byline { color: var(--muted); font-size: 13px; margin-bottom: 26px; }
 .article-body .byline a { color: var(--accent); }
 .article-body p { margin: 0 0 18px; color: rgba(243,239,230,0.88); font-size: 16px; }
