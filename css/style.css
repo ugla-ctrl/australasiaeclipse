@@ -261,6 +261,15 @@ h1, h2, h3, .display { font-family: var(--serif); font-weight: 500; line-height:
   background: rgba(11, 12, 17, 0.88); border: 1px solid var(--line); border-radius: 12px;
   padding: 12px 16px; font-size: 12px; color: var(--muted); backdrop-filter: blur(8px); max-width: 260px;
 }
+.legend-toggle {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%;
+  background: none; border: 0; padding: 0; margin: 0; color: var(--ink); cursor: pointer;
+  font: 600 11px var(--sans); letter-spacing: 0.1em; text-transform: uppercase;
+}
+.legend-toggle .chev { color: var(--accent); transition: transform 0.2s; font-size: 13px; }
+.map-legend.collapsed .legend-toggle .chev { transform: rotate(-90deg); }
+.map-legend .legend-body { margin-top: 10px; }
+.map-legend.collapsed .legend-body { display: none; margin-top: 0; }
 .map-legend .row { display: flex; align-items: center; gap: 9px; margin: 4px 0; }
 .map-legend .swatch { width: 26px; flex: none; }
 .map-legend .swatch.central { height: 0; border-top: 2px solid var(--corona); }

@@ -347,6 +347,14 @@
     window.dispatchEvent(new CustomEvent('globe:light', { detail: { light: light } }));
   });
 
+  // ---------- collapsible map legend (collapsed by default on small screens, where it crowds the map) ----------
+  var mapLegend = document.getElementById('mapLegend'), legendToggle = document.getElementById('legendToggle');
+  if (window.matchMedia('(max-width: 760px)').matches) mapLegend.classList.add('collapsed');
+  legendToggle.addEventListener('click', function () {
+    var collapsed = mapLegend.classList.toggle('collapsed');
+    legendToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  });
+
   // Default to the 3D globe (feedback: 3D should be the default view). The 3D button
   // is pre-marked .on in the HTML; here we swap the panes. The globe itself does NOT
   // start until the map section scrolls into view: starting it at page load meant the

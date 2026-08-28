@@ -107,12 +107,17 @@
         </div>
       </div>
 
-      <div class="map-legend">
-        <div class="row"><span class="swatch band"></span> Path of totality (~230 km wide)</div>
-        <div class="row"><span class="swatch central"></span> Central line, longest totality</div>
-        <div class="row"><span class="swatch limit"></span> Northern &amp; southern limits</div>
-        <div class="row"><span class="swatch pin"><i></i></span> Viewing spots (all inside the path)</div>
-        <div class="hint">Click anywhere on the map for exact local circumstances.</div>
+      <div class="map-legend" id="mapLegend">
+        <button class="legend-toggle" id="legendToggle" aria-expanded="true" aria-controls="legendBody">
+          <span>Legend</span><span class="chev">&#9662;</span>
+        </button>
+        <div class="legend-body" id="legendBody">
+          <div class="row"><span class="swatch band"></span> Path of totality (~230 km wide)</div>
+          <div class="row"><span class="swatch central"></span> Central line, longest totality</div>
+          <div class="row"><span class="swatch limit"></span> Northern &amp; southern limits</div>
+          <div class="row"><span class="swatch pin"><i></i></span> Viewing spots (all inside the path)</div>
+          <div class="hint">Click anywhere on the map for exact local circumstances.</div>
+        </div>
       </div>
     </div>
 
