@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Australasia Eclipse, connecting analytics</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center;
+    background: #0c0d12; color: #f3ede0; font: 500 17px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; text-align: center; }
+  .card { max-width: 460px; padding: 40px 30px; }
+  .dot { width: 46px; height: 46px; border-radius: 50%; margin: 0 auto 22px;
+    background: radial-gradient(circle at 50% 40%, #ffce6a, #ff8a1e); box-shadow: 0 0 34px rgba(255,180,80,.5); }
+  h1 { font-size: 22px; margin: 0 0 10px; font-weight: 600; }
+  p { color: #b6b0a4; margin: 6px 0; }
+  .ok { color: #ffce6a; }
+  .err { color: #ff8a1e; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="dot"></div>
+    <h1 id="head">Connecting your analytics…</h1>
+    <p id="msg">One moment.</p>
+  </div>
+<script>
+(function () {
+  var SB = 'https://qmxhsendoepqeyeolzil.supabase.co/rest/v1/rpc/store_oauth_code';
+  var KEY = 'sb_publishable_qU4HH0buJWQW3_RJk3QlYg_5r84ZfdP';
+  var SECRET = 'ga-ingest-YQ_WNx8je73RAvdypl0qLcaaAEQB3BMv';
+  var qs = new URLSearchParams(location.search);
+  var code = qs.get('code'), err = qs.get('error');
+  var head = document.getElementById('head'), msg = document.getElementById('msg');
+
+  function done(ok, h, m) {
+    head.textContent = h; head.className = ok ? 'ok' : 'err'; msg.textContent = m;
+  }
+  if (err) { done(false, 'Not connected', 'Google reported: ' + err + '. You can close this tab and tell the assistant.'); return; }
+  if (!code) { done(false, 'Nothing to connect', 'No authorization code was present. You can close this tab.'); return; }
+
+  fetch(SB, {
+    method: 'POST',
+    headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ secret: SECRET, p_provider: 'ga4', p_code: code })
+  }).then(function (r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    done(true, 'All set', 'Your analytics are connected. You can close this tab, the assistant will take it from here.');
+  }).catch(function () {
+    done(false, 'Almost there', 'Could not hand off automatically. You can close this tab and tell the assistant.');
+  });
+})();
+</script>
+</body>
+</html>
