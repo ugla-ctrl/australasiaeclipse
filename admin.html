@@ -21,6 +21,13 @@
   .admin-table td.num, .admin-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
   .admin-table tr:first-child td { color: var(--gold); font-weight: 600; }
   .admin-note { color: var(--muted); font-size: 12px; margin-top: 22px; }
+  .ga-range { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+  .ga-delta { font-size: 13px; font-weight: 600; margin-left: 8px; }
+  .ga-delta.up { color: var(--gold); }
+  .ga-delta.down { color: var(--accent); }
+  .ga-delta.flat { color: var(--muted); }
+  .ga-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-top: 22px; }
+  .ga-empty { color: var(--muted); font-size: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
 </style>
 </head>
 <body>
@@ -49,6 +56,9 @@
       <thead><tr><th>Spot</th><th class="num">Votes</th><th class="num">Share</th></tr></thead>
       <tbody></tbody>
     </table>
+
+    <h2 class="section-title" style="font-size: 22px; margin-top: 48px;">Website traffic, weekly scorecard</h2>
+    <div id="gaScore"></div>
 
     <p class="admin-note">This page is not linked anywhere on the public site and the numbers above require the passcode to load, checked by the database itself, not just by this page. Nothing personal (no names or emails) is shown here.</p>
   </div>
@@ -87,6 +97,69 @@
     tbody.innerHTML = (s.spot_breakdown || []).map(function (r) {
       return '<tr><td>' + esc(r.name || r.spot_id) + '</td><td class="num">' + r.votes + '</td><td class="num">' + r.pct + '%</td></tr>';
     }).join('');
+
+    renderGa(s.ga_weeks || []);
+  }
+
+  function renderGa(weeks) {
+    var el = document.getElementById('gaScore');
+    if (!weeks.length) {
+      el.innerHTML = '<div class="ga-empty">No traffic snapshots yet. The Sunday job is scheduled and will start filling this in once Google Analytics access is connected.</div>';
+      return;
+    }
+    var cur = weeks[0], prev = weeks[1] || null;
+
+    function delta(key) {
+      if (!prev || prev.metrics[key] == null) return '';
+      var a = cur.metrics[key], b = prev.metrics[key];
+      if (b === 0 && a === 0) return '<span class="ga-delta flat">no change</span>';
+      if (b === 0) return '<span class="ga-delta up">&#9650; new</span>';
+      var pct = Math.round(((a - b) / b) * 100);
+      if (pct > 0) return '<span class="ga-delta up">&#9650; ' + pct + '%</span>';
+      if (pct < 0) return '<span class="ga-delta down">&#9660; ' + Math.abs(pct) + '%</span>';
+      return '<span class="ga-delta flat">no change</span>';
+    }
+    function mins(sec) { return Math.floor(sec / 60) + 'm ' + (sec % 60) + 's'; }
+
+    var cards = [
+      ['users', 'Visitors', 'unique people, this week vs last'],
+      ['sessions', 'Sessions', 'visits, including repeat visits'],
+      ['pageviews', 'Pageviews', 'pages seen in total'],
+      ['new_users', 'First-time visitors', 'people who had never been before']
+    ];
+    var html = '<p class="ga-range">Week of ' + esc(cur.week_start) + ' to ' + esc(cur.week_end) +
+      (prev ? ', compared with the week before' : ', no earlier week to compare yet') + '</p>';
+    html += '<div class="stats">' + cards.map(function (c) {
+      var v = cur.metrics[c[0]] != null ? cur.metrics[c[0]] : 0;
+      return '<div class="stat"><div class="big">' + v + delta(c[0]) + '</div><div class="cap">' + esc(c[1]) + '<br>' + esc(c[2]) + '</div></div>';
+    }).join('') + '</div>';
+
+    html += '<div class="stats" style="margin-top:18px;">' +
+      '<div class="stat"><div class="big">' + (cur.metrics.engagement_rate != null ? cur.metrics.engagement_rate + '%' : '0%') + delta('engagement_rate') + '</div><div class="cap">Engagement rate<br>share of visits that genuinely engaged</div></div>' +
+      '<div class="stat"><div class="big">' + mins(cur.metrics.avg_session_seconds || 0) + '</div><div class="cap">Average visit length<br>time spent per session</div></div>' +
+      '</div>';
+
+    function miniTable(title, rows, k1, k2, h1, h2) {
+      if (!rows || !rows.length) return '';
+      return '<div><h3 style="font-size:16px; margin-bottom:4px;">' + esc(title) + '</h3>' +
+        '<table class="admin-table"><thead><tr><th>' + h1 + '</th><th class="num">' + h2 + '</th></tr></thead><tbody>' +
+        rows.map(function (r) { return '<tr><td>' + esc(r[k1]) + '</td><td class="num">' + r[k2] + '</td></tr>'; }).join('') +
+        '</tbody></table></div>';
+    }
+    var colsHtml =
+      miniTable('Where visitors came from', cur.top_sources, 'source', 'sessions', 'Source', 'Sessions') +
+      miniTable('Most viewed pages', cur.top_pages, 'path', 'views', 'Page', 'Views') +
+      miniTable('Top countries', cur.top_countries, 'country', 'users', 'Country', 'Visitors');
+    if (colsHtml) html += '<div class="ga-cols">' + colsHtml + '</div>';
+
+    if (weeks.length > 2) {
+      html += '<h3 style="font-size:16px; margin:26px 0 4px;">Past weeks</h3>' +
+        '<table class="admin-table"><thead><tr><th>Week starting</th><th class="num">Visitors</th><th class="num">Sessions</th><th class="num">Pageviews</th></tr></thead><tbody>' +
+        weeks.map(function (w) {
+          return '<tr><td>' + esc(w.week_start) + '</td><td class="num">' + (w.metrics.users || 0) + '</td><td class="num">' + (w.metrics.sessions || 0) + '</td><td class="num">' + (w.metrics.pageviews || 0) + '</td></tr>';
+        }).join('') + '</tbody></table>';
+    }
+    el.innerHTML = html;
   }
 
   document.getElementById('gateForm').addEventListener('submit', function (e) {
