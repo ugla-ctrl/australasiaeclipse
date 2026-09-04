@@ -28,6 +28,10 @@
   .ga-delta.flat { color: var(--muted); }
   .ga-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-top: 22px; }
   .ga-empty { color: var(--muted); font-size: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  .ga-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 22px; }
+  .ga-period-select { background: rgba(12, 13, 18, 0.7); border: 1px solid var(--line); border-radius: 999px; color: var(--ink); font: 600 12px var(--sans); letter-spacing: 0.04em; padding: 9px 16px; outline: none; }
+  .ga-period-select:focus { border-color: var(--accent); }
+  .ga-agg-note { color: var(--muted); font-size: 12px; margin: 4px 0 18px; }
 </style>
 </head>
 <body>
@@ -57,7 +61,16 @@
       <tbody></tbody>
     </table>
 
-    <h2 class="section-title" style="font-size: 22px; margin-top: 48px;">Website traffic, weekly scorecard</h2>
+    <h2 class="section-title" style="font-size: 22px; margin-top: 48px;">Website traffic</h2>
+    <p class="ga-range" style="margin-bottom:18px;">Pulled fresh every Sunday morning. Between Sundays this shows the most recently completed period, nothing is missing, it just hasn't run again yet.</p>
+    <div class="ga-controls" id="gaControls" style="display:none;">
+      <div class="seg" id="gaGranularity">
+        <button data-g="week" class="on">WEEK</button>
+        <button data-g="month">MONTH</button>
+        <button data-g="year">YEAR</button>
+      </div>
+      <select id="gaPeriodSelect" class="ga-period-select"></select>
+    </div>
     <div id="gaScore"></div>
 
     <p class="admin-note">This page is not linked anywhere on the public site and the numbers above require the passcode to load, checked by the database itself, not just by this page. Nothing personal (no names or emails) is shown here.</p>
@@ -101,42 +114,107 @@
     renderGa(s.ga_weeks || []);
   }
 
-  function renderGa(weeks) {
-    var el = document.getElementById('gaScore');
-    if (!weeks.length) {
-      el.innerHTML = '<div class="ga-empty">No traffic snapshots yet. The Sunday job is scheduled and will start filling this in once Google Analytics access is connected.</div>';
-      return;
-    }
-    var cur = weeks[0], prev = weeks[1] || null;
+  // ---------- traffic scorecard: week / month / year, filterable, nothing ever discarded ----------
+  var gaWeeks = []; // full history, every row Supabase has, sorted desc by week_start
+  var gaGranularity = 'week';
+  var gaSelectedKey = null;
 
-    function delta(key) {
-      if (!prev || prev.metrics[key] == null) return '';
-      var a = cur.metrics[key], b = prev.metrics[key];
-      if (b === 0 && a === 0) return '<span class="ga-delta flat">no change</span>';
-      if (b === 0) return '<span class="ga-delta up">&#9650; new</span>';
-      var pct = Math.round(((a - b) / b) * 100);
-      if (pct > 0) return '<span class="ga-delta up">&#9650; ' + pct + '%</span>';
-      if (pct < 0) return '<span class="ga-delta down">&#9660; ' + Math.abs(pct) + '%</span>';
-      return '<span class="ga-delta flat">no change</span>';
+  function mins(sec) { return Math.floor(sec / 60) + 'm ' + (sec % 60) + 's'; }
+  function deltaHtml(a, b) {
+    if (b == null) return '';
+    if (b === 0 && a === 0) return '<span class="ga-delta flat">no change</span>';
+    if (b === 0) return '<span class="ga-delta up">&#9650; new</span>';
+    var pct = Math.round(((a - b) / b) * 100);
+    if (pct > 0) return '<span class="ga-delta up">&#9650; ' + pct + '%</span>';
+    if (pct < 0) return '<span class="ga-delta down">&#9660; ' + Math.abs(pct) + '%</span>';
+    return '<span class="ga-delta flat">no change</span>';
+  }
+  var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  // Sessions, pageviews and new_users are event counts, exact to sum across non-overlapping
+  // weeks. Engagement rate and avg session length are session-weighted averages. "Visitors"
+  // (unique users) deliberately has NO month/year rollup: summing weekly uniques would count
+  // a repeat visitor once per week they showed up, overstating the true unique total, so it's
+  // only ever shown for a single week, where GA gives us the real number directly.
+  function aggregate(rows) {
+    var sessions = 0, pageviews = 0, newUsers = 0, engWeighted = 0, durWeighted = 0;
+    rows.forEach(function (w) {
+      var m = w.metrics || {};
+      var s = m.sessions || 0;
+      sessions += s; pageviews += m.pageviews || 0; newUsers += m.new_users || 0;
+      engWeighted += (m.engagement_rate || 0) * s;
+      durWeighted += (m.avg_session_seconds || 0) * s;
+    });
+    return {
+      sessions: sessions, pageviews: pageviews, new_users: newUsers,
+      engagement_rate: sessions ? Math.round((engWeighted / sessions) * 10) / 10 : 0,
+      avg_session_seconds: sessions ? Math.round(durWeighted / sessions) : 0
+    };
+  }
+
+  function buildPeriods(granularity) {
+    if (granularity === 'week') {
+      return gaWeeks.map(function (w) {
+        return { key: w.week_start, label: 'Week of ' + w.week_start + ' to ' + w.week_end, rows: [w], single: w };
+      });
     }
-    function mins(sec) { return Math.floor(sec / 60) + 'm ' + (sec % 60) + 's'; }
+    var keyLen = granularity === 'month' ? 7 : 4; // 'YYYY-MM' or 'YYYY'
+    var byKey = {};
+    var order = [];
+    gaWeeks.forEach(function (w) {
+      var key = w.week_start.slice(0, keyLen);
+      if (!byKey[key]) { byKey[key] = []; order.push(key); }
+      byKey[key].push(w);
+    });
+    return order.map(function (key) {
+      var label;
+      if (granularity === 'month') {
+        var parts = key.split('-'); label = MONTH_NAMES[parseInt(parts[1], 10) - 1] + ' ' + parts[0];
+      } else label = key;
+      return { key: key, label: label, rows: byKey[key], single: null };
+    });
+  }
+
+  function renderPeriodSelect() {
+    var periods = buildPeriods(gaGranularity);
+    var sel = document.getElementById('gaPeriodSelect');
+    sel.innerHTML = periods.map(function (p) { return '<option value="' + esc(p.key) + '">' + esc(p.label) + '</option>'; }).join('');
+    if (!periods.some(function (p) { return p.key === gaSelectedKey; })) gaSelectedKey = periods.length ? periods[0].key : null;
+    sel.value = gaSelectedKey;
+    return periods;
+  }
+
+  function renderGaBody() {
+    var el = document.getElementById('gaScore');
+    var periods = buildPeriods(gaGranularity);
+    var idx = periods.findIndex(function (p) { return p.key === gaSelectedKey; });
+    if (idx === -1) idx = 0;
+    var cur = periods[idx], prevPeriod = periods[idx + 1] || null; // periods sorted newest first
+
+    var curAgg = cur.single ? cur.single.metrics : aggregate(cur.rows);
+    var prevAgg = prevPeriod ? (prevPeriod.single ? prevPeriod.single.metrics : aggregate(prevPeriod.rows)) : null;
+
+    var noun = gaGranularity === 'week' ? 'week' : gaGranularity === 'month' ? 'month' : 'year';
+    var html = '<p class="ga-range">' + esc(cur.label) +
+      (prevPeriod ? ', compared with the ' + noun + ' before' : ', no earlier ' + noun + ' to compare yet') + '</p>';
 
     var cards = [
-      ['users', 'Visitors', 'unique people, this week vs last'],
       ['sessions', 'Sessions', 'visits, including repeat visits'],
       ['pageviews', 'Pageviews', 'pages seen in total'],
       ['new_users', 'First-time visitors', 'people who had never been before']
     ];
-    var html = '<p class="ga-range">Week of ' + esc(cur.week_start) + ' to ' + esc(cur.week_end) +
-      (prev ? ', compared with the week before' : ', no earlier week to compare yet') + '</p>';
+    if (cur.single) cards.unshift(['users', 'Visitors', 'unique people, this ' + noun + ' vs last']);
+    else html += '<p class="ga-agg-note">Visitors (unique people) isn\'t summed across weeks here, a repeat visitor would get counted more than once. Switch to Week to see the exact figure for any single week.</p>';
+
     html += '<div class="stats">' + cards.map(function (c) {
-      var v = cur.metrics[c[0]] != null ? cur.metrics[c[0]] : 0;
-      return '<div class="stat"><div class="big">' + v + delta(c[0]) + '</div><div class="cap">' + esc(c[1]) + '<br>' + esc(c[2]) + '</div></div>';
+      var v = curAgg[c[0]] != null ? curAgg[c[0]] : 0;
+      var pv = prevAgg ? prevAgg[c[0]] : null;
+      return '<div class="stat"><div class="big">' + v + deltaHtml(v, pv) + '</div><div class="cap">' + esc(c[1]) + '<br>' + esc(c[2]) + '</div></div>';
     }).join('') + '</div>';
 
     html += '<div class="stats" style="margin-top:18px;">' +
-      '<div class="stat"><div class="big">' + (cur.metrics.engagement_rate != null ? cur.metrics.engagement_rate + '%' : '0%') + delta('engagement_rate') + '</div><div class="cap">Engagement rate<br>share of visits that genuinely engaged</div></div>' +
-      '<div class="stat"><div class="big">' + mins(cur.metrics.avg_session_seconds || 0) + '</div><div class="cap">Average visit length<br>time spent per session</div></div>' +
+      '<div class="stat"><div class="big">' + (curAgg.engagement_rate || 0) + '%' + deltaHtml(curAgg.engagement_rate || 0, prevAgg ? prevAgg.engagement_rate : null) + '</div><div class="cap">Engagement rate<br>share of visits that genuinely engaged</div></div>' +
+      '<div class="stat"><div class="big">' + mins(curAgg.avg_session_seconds || 0) + '</div><div class="cap">Average visit length<br>time spent per session</div></div>' +
       '</div>';
 
     function miniTable(title, rows, k1, k2, h1, h2) {
@@ -146,21 +224,53 @@
         rows.map(function (r) { return '<tr><td>' + esc(r[k1]) + '</td><td class="num">' + r[k2] + '</td></tr>'; }).join('') +
         '</tbody></table></div>';
     }
-    var colsHtml =
-      miniTable('Where visitors came from', cur.top_sources, 'source', 'sessions', 'Source', 'Sessions') +
-      miniTable('Most viewed pages', cur.top_pages, 'path', 'views', 'Page', 'Views') +
-      miniTable('Top countries', cur.top_countries, 'country', 'users', 'Country', 'Visitors');
-    if (colsHtml) html += '<div class="ga-cols">' + colsHtml + '</div>';
+    if (cur.single) {
+      var colsHtml =
+        miniTable('Where visitors came from', cur.single.top_sources, 'source', 'sessions', 'Source', 'Sessions') +
+        miniTable('Most viewed pages', cur.single.top_pages, 'path', 'views', 'Page', 'Views') +
+        miniTable('Top countries', cur.single.top_countries, 'country', 'users', 'Country', 'Visitors');
+      if (colsHtml) html += '<div class="ga-cols">' + colsHtml + '</div>';
+    }
 
-    if (weeks.length > 2) {
-      html += '<h3 style="font-size:16px; margin:26px 0 4px;">Past weeks</h3>' +
-        '<table class="admin-table"><thead><tr><th>Week starting</th><th class="num">Visitors</th><th class="num">Sessions</th><th class="num">Pageviews</th></tr></thead><tbody>' +
-        weeks.map(function (w) {
-          return '<tr><td>' + esc(w.week_start) + '</td><td class="num">' + (w.metrics.users || 0) + '</td><td class="num">' + (w.metrics.sessions || 0) + '</td><td class="num">' + (w.metrics.pageviews || 0) + '</td></tr>';
+    if (periods.length > 1) {
+      var histLabel = gaGranularity === 'week' ? 'Week starting' : gaGranularity === 'month' ? 'Month' : 'Year';
+      html += '<h3 style="font-size:16px; margin:26px 0 4px;">Full history, every ' + noun + ' on record</h3>' +
+        '<table class="admin-table"><thead><tr><th>' + histLabel + '</th><th class="num">Sessions</th><th class="num">Pageviews</th></tr></thead><tbody>' +
+        periods.map(function (p) {
+          var a = p.single ? p.single.metrics : aggregate(p.rows);
+          return '<tr><td>' + esc(p.label) + '</td><td class="num">' + (a.sessions || 0) + '</td><td class="num">' + (a.pageviews || 0) + '</td></tr>';
         }).join('') + '</tbody></table>';
     }
     el.innerHTML = html;
   }
+
+  function renderGa(weeks) {
+    gaWeeks = weeks || [];
+    var el = document.getElementById('gaScore'), controls = document.getElementById('gaControls');
+    if (!gaWeeks.length) {
+      controls.style.display = 'none';
+      el.innerHTML = '<div class="ga-empty">No traffic snapshots yet. The Sunday job is scheduled and will start filling this in once Google Analytics access is connected.</div>';
+      return;
+    }
+    controls.style.display = 'flex';
+    gaSelectedKey = null; // default to the most recent period whenever fresh data loads
+    renderPeriodSelect();
+    renderGaBody();
+  }
+
+  document.getElementById('gaGranularity').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    document.querySelectorAll('#gaGranularity button').forEach(function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    gaGranularity = b.dataset.g;
+    gaSelectedKey = null; // reset to most recent period of the new granularity
+    renderPeriodSelect();
+    renderGaBody();
+  });
+  document.getElementById('gaPeriodSelect').addEventListener('change', function (e) {
+    gaSelectedKey = e.target.value;
+    renderGaBody();
+  });
 
   document.getElementById('gateForm').addEventListener('submit', function (e) {
     e.preventDefault();
