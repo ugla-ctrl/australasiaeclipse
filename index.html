@@ -518,6 +518,7 @@
 /* Blog modals */
 (function () {
   document.querySelectorAll('.post-card').forEach(function (card) {
+    if (!card.dataset.article) return;
     card.addEventListener('click', function (e) {
       e.preventDefault();
       document.getElementById('modal-' + card.dataset.article).classList.add('open');
