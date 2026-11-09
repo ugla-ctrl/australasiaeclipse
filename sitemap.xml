@@ -2,12 +2,12 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://australasiaeclipse.com/</loc>
-    <lastmod>2026-08-28</lastmod>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>weekly</changefreq>
   </url>
   <url>
     <loc>https://australasiaeclipse.com/articles/the-eclipse-trilogy.html</loc>
-    <lastmod>2026-08-28</lastmod>
+    <lastmod>2026-11-07</lastmod>
     <changefreq>monthly</changefreq>
   </url>
   <url>
@@ -21,38 +21,43 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
+    <loc>https://australasiaeclipse.com/guides/</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
     <loc>https://australasiaeclipse.com/guides/sydney/</loc>
-    <lastmod>2026-11-03</lastmod>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://australasiaeclipse.com/guides/kimberley/</loc>
-    <lastmod>2026-11-03</lastmod>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://australasiaeclipse.com/guides/outback/</loc>
-    <lastmod>2026-11-03</lastmod>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://australasiaeclipse.com/guides/new-zealand/</loc>
-    <lastmod>2026-11-03</lastmod>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://australasiaeclipse.com/guides/next-solar-eclipse-australia/</loc>
-    <lastmod>2026-11-03</lastmod>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://australasiaeclipse.com/guides/how-to-photograph-a-total-solar-eclipse/</loc>
-    <lastmod>2026-11-03</lastmod>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://australasiaeclipse.com/guides/2028-total-solar-eclipse-australia/</loc>
-    <lastmod>2026-11-05</lastmod>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>monthly</changefreq>
   </url>
 </urlset>
