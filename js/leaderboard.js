@@ -21,7 +21,7 @@
   // Same gold, fading opacity per rank, so the ring and the list read as one system.
   function wedgeColor(i) {
     var a = Math.max(0.22, 1 - i * 0.15);
-    return 'rgba(255, 206, 106, ' + a.toFixed(2) + ')';
+    return 'rgba(233, 180, 76, ' + a.toFixed(2) + ')';
   }
 
   function render(spotVotes, spotNames) {

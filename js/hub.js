@@ -3,7 +3,7 @@
 (function () {
   'use strict';
 
-  var CORONA = '#ffce6a', CORONA_RIM = '#fff2d6', AMBER = '#ff8a1e';
+  var CORONA = '#e9b44c', CORONA_RIM = '#fff2d6', AMBER = '#2fb8ac';
   var R = 6371, D2R = Math.PI / 180;
 
   // ---------- helpers ----------
